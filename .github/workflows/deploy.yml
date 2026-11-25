@@ -30,6 +30,9 @@ jobs:
 
       - run: npm ci
 
+      # navegador para os screenshots dos sites (capas dos projetos)
+      - run: npx playwright install --with-deps chromium
+
       # Repo "<usuario>.github.io" é servido na raiz; qualquer outro, em /<repo>/.
       - name: Definir base path
         run: |

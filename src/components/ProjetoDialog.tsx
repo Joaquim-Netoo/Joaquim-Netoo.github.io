@@ -18,24 +18,30 @@ export function openProjeto(name: string) {
 }
 
 /** Capa: imagem social do repo ou, sem ela, uma "tela" com o nome em fósforo. */
-export function ProjetoCapa({ repo, eager = false }: { repo: ProjetoRepo; eager?: boolean }) {
+export function ProjetoCapa({ repo, eager = false, fill = false }: { repo: ProjetoRepo; eager?: boolean; fill?: boolean }) {
+  // fill: ocupa a altura do card no desktop (2:1 no mobile)
+  const box = fill ? "aspect-[2/1] sm:aspect-auto sm:h-full sm:min-h-full" : "aspect-[2/1]";
   if (repo.og) {
     return (
-      <img
-        src={asset(repo.og)}
-        alt=""
-        width={1200}
-        height={600}
-        loading={eager ? "eager" : "lazy"}
-        decoding="async"
-        className="aspect-[2/1] w-full object-cover [filter:grayscale(0.35)_contrast(1.05)]"
-      />
+      <div className={`relative w-full overflow-hidden bg-tube-2 ${box}`}>
+        <img
+          src={asset(repo.og)}
+          alt=""
+          width={1200}
+          height={600}
+          loading={eager ? "eager" : "lazy"}
+          decoding="async"
+          className="absolute inset-0 h-full w-full object-cover object-left-top"
+        />
+        {/* screenshot "dentro do tubo": linhas de varredura leves por cima */}
+        <span aria-hidden="true" className="crt-scanlines absolute inset-0 opacity-25" />
+      </div>
     );
   }
   return (
     <div
       aria-hidden="true"
-      className="relative grid aspect-[2/1] w-full place-items-center overflow-hidden bg-tube-2 [container-type:inline-size]"
+      className={`relative grid w-full place-items-center overflow-hidden bg-tube-2 [container-type:inline-size] ${box}`}
     >
       {/* o nome cabe numa linha: a fonte encolhe pela largura do container (cqw) */}
       <span
@@ -45,7 +51,7 @@ export function ProjetoCapa({ repo, eager = false }: { repo: ProjetoRepo; eager?
         {repo.titulo.toUpperCase()}
       </span>
       <span className="hw absolute bottom-3 left-4">{repo.language ?? "SEM LINGUAGEM"}</span>
-      <span className="hw absolute right-4 bottom-3">{repo.manual ? "PROJETO" : `★ ${repo.stargazers_count}`}</span>
+      <span className="hw absolute right-4 bottom-3">{repo.manual ? "PROJETO" : repo.stargazers_count > 0 ? `★ ${repo.stargazers_count}` : ""}</span>
       <span className="crt-scanlines absolute inset-0 opacity-20" />
     </div>
   );
@@ -126,11 +132,18 @@ export function ProjetoDialog() {
                     ["LINGUAGEM", repo.language ?? "—"],
                     ["DATA", shortDate(repo.created_at).slice(3)],
                   ]
-                : [
-                    ["ESTRELAS", `★ ${repo.stargazers_count}`],
-                    ["FORKS", String(repo.forks_count)],
-                    ["ATUALIZADO", relativeTime(repo.pushed_at)],
-                  ]
+                : repo.stargazers_count + repo.forks_count > 0
+                  ? [
+                      ["ESTRELAS", `★ ${repo.stargazers_count}`],
+                      ["FORKS", String(repo.forks_count)],
+                      ["ATUALIZADO", relativeTime(repo.pushed_at)],
+                    ]
+                  : [
+                      // sem estrelas/forks: datas dizem mais do que "★ 0"
+                      ["LINGUAGEM", repo.language ?? "—"],
+                      ["CRIADO", shortDate(repo.created_at).slice(3)],
+                      ["ATUALIZADO", relativeTime(repo.pushed_at)],
+                    ]
               ).map(([k, v]) => (
                 <div key={k} className="bg-tube p-3">
                   <dt className="text-phosphor-dim">{k}</dt>

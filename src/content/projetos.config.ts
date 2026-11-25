@@ -11,8 +11,9 @@ import type { ProjetoManual, ProjetosConfig } from "../lib/types";
  * - manuais: projetos FORA do GitHub (clientes, sites no ar, projetos sem repo).
  */
 export const projetosConfig: ProjetosConfig = {
-  githubUser: "{{GITHUB_USER}}", // preenchido na Fase 8
-  destaques: [] as string[],
+  githubUser: "Joaquim-Netoo",
+  // os 4 com site no ar e descrição; troque à vontade
+  destaques: ["forja", "apogeu", "direito-delas", "afya-admin"] as string[],
   ocultos: [] as string[],
   mostrarForks: false,
   mostrarArquivados: false,

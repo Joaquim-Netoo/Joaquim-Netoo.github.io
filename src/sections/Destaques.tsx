@@ -44,7 +44,7 @@ function ProjetoCard({ repo }: { repo: ProjetoRepo }) {
       <span className="term-title">{repo.name.toUpperCase()}.EXE</span>
       <div className="overflow-hidden border-phosphor-dim/60 max-sm:border-b sm:border-r">
         <div className="h-full transition-transform duration-200 ease-[var(--ease-out)] group-hover:scale-[1.02]">
-          <ProjetoCapa repo={repo} />
+          <ProjetoCapa repo={repo} fill />
         </div>
       </div>
       <div className="flex flex-col gap-3 p-5 sm:p-6">
@@ -67,8 +67,12 @@ function ProjetoCard({ repo }: { repo: ProjetoRepo }) {
             <span>{shortDate(repo.created_at).slice(3)}</span>
           ) : (
             <>
-              <span>★ {repo.stargazers_count}</span>
-              <span aria-hidden="true">·</span>
+              {repo.stargazers_count > 0 && (
+                <>
+                  <span>★ {repo.stargazers_count}</span>
+                  <span aria-hidden="true">·</span>
+                </>
+              )}
               <span>atualizado {relativeTime(repo.pushed_at)}</span>
             </>
           )}

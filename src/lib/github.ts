@@ -135,11 +135,43 @@ export function activity(repos: Repo[], now: Date = new Date()): ActivityEvent[]
   return events.sort((a, b) => +new Date(b.date) - +new Date(a.date));
 }
 
+const decodeEntities = (s: string) =>
+  s
+    .replace(/&amp;/g, "&")
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;|&apos;/g, "'")
+    .replace(/&lt;/g, "<")
+    .replace(/&gt;/g, ">")
+    .replace(/&nbsp;/g, " ");
+
+/** Meta description (ou og:description) de uma página HTML. */
+export function metaDescription(html: string): string | null {
+  for (const tag of html.match(/<meta\b[^>]*>/gi) ?? []) {
+    if (!/(name|property)\s*=\s*["'](description|og:description)["']/i.test(tag)) continue;
+    const m = tag.match(/content\s*=\s*"([^"]*)"|content\s*=\s*'([^']*)'/i);
+    const v = decodeEntities((m?.[1] ?? m?.[2] ?? "").trim());
+    if (v) return v;
+  }
+  return null;
+}
+
+/** Primeira frase de um texto (até ~160 caracteres). */
+export function firstSentence(text: string, max = 160): string {
+  const first = text.split(/\n\n/)[0].trim();
+  const m = first.match(/^.+?[.!?](?=\s|$)/);
+  const s = m ? m[0] : first;
+  if (s.length <= max) return s;
+  const cut = s.slice(0, max);
+  return `${cut.slice(0, cut.lastIndexOf(" ") > max * 0.6 ? cut.lastIndexOf(" ") : max).trimEnd()}…`;
+}
+
 /** Limpa o markdown do README e devolve os primeiros parágrafos (~600 caracteres). */
 export function cleanReadme(md: string, max = 600): string {
   const text = md
     .replace(/\r\n/g, "\n")
     .replace(/```[\s\S]*?```/g, "")
+    // tabelas markdown (linhas que começam com "|") costumam ter metadados, às vezes pessoais
+    .replace(/^\s*\|.*$/gm, "")
     .replace(/<!--[\s\S]*?-->/g, "")
     .replace(/<[^>]+>/g, "")
     .replace(/!\[[^\]]*\]\([^)]*\)/g, "")

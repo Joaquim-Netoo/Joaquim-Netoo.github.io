@@ -5,7 +5,9 @@ import {
   featuredRepos,
   languageShare,
   languageStats,
+  firstSentence,
   manualToRepo,
+  metaDescription,
   profileStats,
   sortRepos,
   visibleRepos,
@@ -208,10 +210,28 @@ describe("cleanReadme", () => {
     ].join("\n");
     expect(cleanReadme(md)).toBe("Um app que faz coisas úteis com links.\n\nSegundo parágrafo.");
   });
+  it("remove tabelas markdown (podem ter dados pessoais, como matrícula)", () => {
+    const md = ["| | |", "|---|---|", "| Aluno(a) | Fulano |", "| Matrícula | 123 |", "", "Texto do projeto."].join("\n");
+    expect(cleanReadme(md)).toBe("Texto do projeto.");
+  });
   it("corta textos longos numa fronteira de palavra com reticências", () => {
     const out = cleanReadme("palavra ".repeat(200));
     expect(out.length).toBeLessThanOrEqual(601);
     expect(out.endsWith("…")).toBe(true);
+  });
+});
+
+describe("metaDescription / firstSentence", () => {
+  it("lê a meta description (ou og:description) do HTML e decodifica entidades", () => {
+    expect(metaDescription('<head><meta name="description" content="Treino &amp; medalhas."></head>')).toBe("Treino & medalhas.");
+    expect(metaDescription("<meta content='Via OG' property='og:description'>")).toBe("Via OG");
+    expect(metaDescription("<title>Sem meta</title>")).toBeNull();
+  });
+  it("pega a primeira frase do README, com no máximo ~160 caracteres", () => {
+    expect(firstSentence("O projeto é um painel. Feito com Blazor.")).toBe("O projeto é um painel.");
+    const long = firstSentence("palavra ".repeat(60));
+    expect(long.length).toBeLessThanOrEqual(161);
+    expect(long.endsWith("…")).toBe(true);
   });
 });
 

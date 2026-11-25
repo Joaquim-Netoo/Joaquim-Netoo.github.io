@@ -46,11 +46,19 @@ const browser = await chromium.launch({ channel: "chrome", args: ["--use-angle=d
   // Filtro e ordenação do arquivo
   await page.locator("#arquivo").scrollIntoViewIfNeeded();
   const total = await page.locator("#arquivo tbody tr").count();
-  await page.getByRole("tab", { name: /PYTHON/ }).click();
-  const py = await page.locator("#arquivo tbody tr").count();
+  // primeira aba de linguagem (depois de TODAS): todas as linhas filtradas devem ser dessa linguagem
+  const tab = page.getByRole("tab").nth(1);
+  const lang = (await tab.textContent()).replace(/[[\]]/g, "").trim();
+  await tab.click();
+  const langs = await page.locator("#arquivo tbody tr td:nth-child(2)").allTextContents();
   await page.getByRole("button", { name: "NOME" }).click();
   const names = await page.locator("#arquivo tbody tr td:first-child button").allTextContents();
-  r.arquivo = { total, python: py, ordenadoPorNome: names.join(",") === [...names].sort((a, b) => a.localeCompare(b)).join(",") };
+  r.arquivo = {
+    total,
+    filtro: `${lang}: ${langs.length}`,
+    filtroCorreto: langs.length > 0 && langs.every((l) => l.trim().toUpperCase() === lang),
+    ordenadoPorNome: names.join(",") === [...names].sort((a, b) => a.localeCompare(b, "pt-BR", { sensitivity: "base" })).join(","),
+  };
 
   // Terminal Ctrl+K
   await page.keyboard.press("Control+k");

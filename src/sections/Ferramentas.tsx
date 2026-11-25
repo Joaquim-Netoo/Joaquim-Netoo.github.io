@@ -75,13 +75,26 @@ function montarGrupos(): Record<Grupo, string[]> {
   return g;
 }
 
-const LAYOUT: { grupo: Grupo; className: string }[] = [
-  { grupo: "Linguagens", className: "lg:col-span-7 lg:row-span-2" },
-  { grupo: "Front-end", className: "lg:col-span-5" },
-  { grupo: "Back-end", className: "lg:col-span-5" },
-  { grupo: "Dados", className: "lg:col-span-5" },
-  { grupo: "Ferramentas", className: "lg:col-span-7" },
-];
+const ORDEM: Grupo[] = ["Linguagens", "Front-end", "Back-end", "Dados", "Ferramentas"];
+
+/**
+ * Grade assimétrica só com os grupos que têm itens: Linguagens ocupa 7 colunas e 2 linhas,
+ * os dois seguintes empilham ao lado (5 colunas) e o resto fecha a última linha (5 + 7, ou 12 sozinho).
+ */
+function layoutVisivel(grupos: Record<Grupo, string[]>): { grupo: Grupo; className: string }[] {
+  const vis = ORDEM.filter((g) => grupos[g].length > 0);
+  const [first, ...others] = vis;
+  if (!first) return [];
+  const out = [{ grupo: first, className: others.length >= 2 ? "lg:col-span-7 lg:row-span-2" : "lg:col-span-7" }];
+  others.forEach((g, i) => {
+    let cls = "lg:col-span-5";
+    const tail = others.length - 2;
+    if (others.length === 1) cls = "lg:col-span-5";
+    else if (i >= 2) cls = tail === 1 ? "lg:col-span-12" : i === 2 ? "lg:col-span-5" : "lg:col-span-7";
+    out.push({ grupo: g, className: cls });
+  });
+  return out;
+}
 
 export function Ferramentas() {
   const ref = useRef<HTMLElement>(null);
@@ -94,7 +107,7 @@ export function Ferramentas() {
       <SectionTitle id="stack-title" keyword="FERRAMENTAS" rest="de trabalho." />
 
       <ul className="mt-[clamp(40px,6vw,88px)] grid gap-x-5 gap-y-8 md:grid-cols-2 lg:grid-cols-12">
-        {LAYOUT.map(({ grupo, className }, i) => {
+        {layoutVisivel(grupos).map(({ grupo, className }, i) => {
           const items = grupos[grupo];
           const big = grupo === "Linguagens";
           return (

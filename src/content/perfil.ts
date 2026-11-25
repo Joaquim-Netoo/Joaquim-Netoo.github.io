@@ -5,7 +5,7 @@
  */
 export const perfil = {
   /** Nome completo (título da hero e rodapé). PREENCHER */
-  nome: "Joaquim",
+  nome: "Joaquim Camillo",
   /** Nome curto em maiúsculas: aparece em JOAQUIM.SYS e nos prompts C:\JOAQUIM> */
   nomeCurto: "JOAQUIM",
   /** Cargo / área (linha em itálico abaixo do nome). PREENCHER */
@@ -21,19 +21,22 @@ export const perfil = {
   foto: "",
   /** Contatos. PREENCHER */
   email: "seu-email@exemplo.com",
-  githubUrl: "https://github.com/",
+  githubUrl: "https://github.com/Joaquim-Netoo",
   linkedinUrl: "https://www.linkedin.com/",
   /** Outras redes (opcional): { nome, url } */
   outrasRedes: [] as { nome: string; url: string }[],
   /** Currículo em PDF dentro de public/ (ex.: "curriculo.pdf"). Vazio = comando oculto. PREENCHER */
   curriculoPdf: "",
-  /** Ferramentas que não aparecem no GitHub, por grupo. PREENCHER */
+  /**
+   * Ferramentas que não aparecem como linguagem no GitHub, por grupo. PREENCHER com o que você usa de verdade.
+   * Hoje só tem o que dá para ver nos seus repositórios. Grupos vazios não aparecem no site.
+   */
   stackExtra: {
     Linguagens: [] as string[],
-    "Front-end": ["React", "Tailwind CSS", "GSAP", "Three.js"],
-    "Back-end": ["Node.js", "FastAPI", "Django"],
-    Dados: ["PostgreSQL", "SQLite", "Pandas"],
-    Ferramentas: ["Git", "Docker", "Linux", "VS Code", "Figma"],
+    "Front-end": ["Blazor WebAssembly", "MudBlazor"],
+    "Back-end": [] as string[],
+    Dados: [] as string[],
+    Ferramentas: ["Git", "GitHub Pages"],
   } as Record<string, string[]>,
   /** URL final do site (para Open Graph). PREENCHER */
   siteUrl: "",

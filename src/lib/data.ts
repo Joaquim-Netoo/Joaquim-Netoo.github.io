@@ -3,7 +3,8 @@ import { projetosConfig } from "@/content/projetos.config";
 import { activity, featuredRepos, languageStats, manualToRepo, profileStats, visibleRepos } from "./github";
 import type { GithubData, Repo } from "./types";
 
-const data = raw as GithubData;
+// o JSON muda a cada build: o tipo inferido pelo TS não serve, o contrato é GithubData
+const data = raw as unknown as GithubData;
 
 /** Aplica os textos de `sobrescrever` da config. */
 function applyOverrides(r: Repo): Repo & { titulo: string; papel?: string } {
