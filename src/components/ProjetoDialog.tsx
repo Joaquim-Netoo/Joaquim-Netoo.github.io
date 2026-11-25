@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from "@/components/ui/dialog";
@@ -83,6 +84,48 @@ export function LanguageBar({ repo }: { repo: ProjetoRepo }) {
           </li>
         ))}
       </ul>
+    </div>
+  );
+}
+
+/** Login de demonstração: e-mail e senha com botão de copiar cada um. */
+function AcessoDemo({ acesso }: { acesso: { email: string; senha: string } }) {
+  const [copiado, setCopiado] = useState<string | null>(null);
+  async function copiar(campo: string, valor: string) {
+    try {
+      await navigator.clipboard.writeText(valor);
+      setCopiado(campo);
+      window.setTimeout(() => setCopiado((c) => (c === campo ? null : c)), 1600);
+    } catch {
+      /* sem permissão: o texto continua selecionável */
+    }
+  }
+  return (
+    <div className="term px-5 pt-7 pb-4">
+      <span className="term-title">ACESSO DE DEMONSTRAÇÃO</span>
+      <dl className="mono grid gap-2 text-[0.9375rem]">
+        {(
+          [
+            ["E-MAIL", acesso.email],
+            ["SENHA", acesso.senha],
+          ] as const
+        ).map(([campo, valor]) => (
+          <div key={campo} className="flex flex-wrap items-center gap-x-4 gap-y-1">
+            <dt className="w-16 text-[0.8125rem] text-phosphor-dim">{campo}</dt>
+            <dd className="min-w-0 flex-1 break-all text-paper select-all">{valor}</dd>
+            <dd>
+              <button
+                type="button"
+                onClick={() => copiar(campo, valor)}
+                aria-label={`Copiar ${campo.toLowerCase()}`}
+                className="min-h-11 px-2 text-[0.8125rem] text-phosphor transition-[color,transform] duration-150 hover:text-paper active:scale-[0.97]"
+              >
+                {copiado === campo ? "COPIADO ✓" : "COPIAR"}
+              </button>
+            </dd>
+          </div>
+        ))}
+      </dl>
     </div>
   );
 }
@@ -191,6 +234,15 @@ export function ProjetoDialog() {
                   ))}
                 </div>
               </div>
+            )}
+
+            {repo.acessoDemo && <AcessoDemo acesso={repo.acessoDemo} />}
+
+            {repo.obs && (
+              <p className="border-l-2 border-phosphor-dim pl-4 text-[0.9375rem] leading-relaxed text-paper-dim">
+                <span className="mono mr-2 text-[0.8125rem] text-phosphor">OBS:</span>
+                {repo.obs}
+              </p>
             )}
 
             <div className="flex flex-wrap gap-3">

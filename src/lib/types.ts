@@ -23,6 +23,10 @@ export interface Repo {
   stack?: string[];
   /** projeto manual com data só de ano (sem mês): exibe apenas o ano */
   soAno?: boolean;
+  /** observação mostrada no detalhe (ex.: limitação do plano gratuito) */
+  obs?: string;
+  /** login de demonstração para o visitante testar o app */
+  acessoDemo?: { email: string; senha: string };
 }
 
 /** Ajustes manuais de um repo do GitHub (projetos.config.ts → sobrescrever). */
@@ -59,6 +63,10 @@ export interface ProjetoManual {
   papel?: string;
   /** true = aparece nos destaques (disquetes) */
   destaque?: boolean;
+  /** Observação curta no detalhe (ex.: "feito no plano gratuito do Supabase…") */
+  obs?: string;
+  /** Login de demonstração mostrado no detalhe, com botões de copiar */
+  acessoDemo?: { email: string; senha: string };
 }
 
 export interface GithubData {

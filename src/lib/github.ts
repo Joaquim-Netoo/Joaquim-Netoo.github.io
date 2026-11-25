@@ -12,8 +12,8 @@ function slugify(s: string): string {
 
 /** Projeto cadastrado à mão (fora do GitHub) → mesmo formato de um repo. */
 export function manualToRepo(m: ProjetoManual): Repo {
-  const [ano, mes = "06"] = m.data.split("-");
-  const date = `${ano}-${mes.padStart(2, "0")}-15T12:00:00Z`;
+  const [ano, mes = "06", dia = "15"] = m.data.split("-");
+  const date = `${ano}-${mes.padStart(2, "0")}-${dia.padStart(2, "0")}T12:00:00Z`;
   return {
     name: slugify(m.nome),
     description: m.descricao,
@@ -31,6 +31,8 @@ export function manualToRepo(m: ProjetoManual): Repo {
     og: m.capa,
     manual: true,
     ...(m.data.includes("-") ? {} : { soAno: true }),
+    ...(m.obs ? { obs: m.obs } : {}),
+    ...(m.acessoDemo ? { acessoDemo: m.acessoDemo } : {}),
   };
 }
 

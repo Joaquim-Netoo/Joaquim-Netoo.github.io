@@ -70,6 +70,19 @@ describe("manualToRepo", () => {
     expect(r.created_at.startsWith("2025-08")).toBe(true);
     expect(r.pushed_at).toBe(r.created_at);
   });
+  it("aceita data com dia e repassa observação e acesso de demonstração", () => {
+    const r = manualToRepo({
+      nome: "App",
+      descricao: "x",
+      data: "2026-10-02",
+      obs: "Plano gratuito.",
+      acessoDemo: { email: "a@b.com", senha: "123" },
+    });
+    expect(r.created_at.startsWith("2026-10-02")).toBe(true);
+    expect(r.soAno).toBeUndefined();
+    expect(r.obs).toBe("Plano gratuito.");
+    expect(r.acessoDemo).toEqual({ email: "a@b.com", senha: "123" });
+  });
   it("aceita só o ano e remove acentos do slug", () => {
     const r = manualToRepo({ nome: "Ação & Reação", descricao: "x", data: "2024" });
     expect(r.name).toBe("acao-reacao");
