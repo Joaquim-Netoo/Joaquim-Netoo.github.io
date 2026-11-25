@@ -128,7 +128,7 @@ export function Footer() {
     <footer className="relative mt-[var(--section-gap)] overflow-hidden border-t border-phosphor-dim/60 bg-tube">
       <div className="wrap flex flex-wrap items-center justify-between gap-6 py-8">
         <p className="mono text-[0.8125rem] text-paper-dim">
-          © 2026 {perfil.nome} · feito à mão, com café e fósforo verde.
+          (C) 2026 {perfil.nome} · feito à mão, com café e fósforo verde.
         </p>
         <button type="button" className="btn-term" onClick={desligar}>
           <span aria-hidden="true" className="inline-block size-2 rounded-full bg-led" />
@@ -137,7 +137,8 @@ export function Footer() {
       </div>
       <p
         aria-hidden="true"
-        className="mono glow pointer-events-none -mb-[0.2em] text-center leading-[0.8] tracking-[-0.06em] whitespace-nowrap select-none"
+        // encosta na base da página: corta só o espaço vazio abaixo das letras, nunca o desenho delas
+        className="mono glow pointer-events-none -mb-[0.08em] text-center leading-none tracking-[-0.06em] whitespace-nowrap select-none"
         style={{ fontSize: `calc((100vw - 2 * var(--gutter)) / ${Math.max(perfil.nomeCurto.length, 4) * 0.6})` }}
       >
         {perfil.nomeCurto}
