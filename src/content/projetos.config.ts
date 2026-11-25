@@ -28,6 +28,14 @@ export const projetosConfig: ProjetosConfig = {
     "afya-admin": {
       tecnologias: ["Blazor WebAssembly", "MudBlazor"],
     },
+    // o repositório deste próprio site
+    "Joaquim-Netoo.github.io": {
+      titulo: "ligue-a-tela (este site)",
+      descricao:
+        "Este portfólio: um monitor CRT em 3D que liga, mergulha na tela e mostra os projetos, atualizados do GitHub todo dia.",
+      capa: "og-image.png",
+      tecnologias: ["React", "Three.js", "GSAP", "Tailwind CSS", "Vite"],
+    },
   } as Record<string, Sobrescrita>,
 
   manuais: [
