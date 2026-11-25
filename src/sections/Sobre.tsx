@@ -80,7 +80,7 @@ export function Sobre() {
           onUpdate: () => {
             el.textContent = String(obj.v);
           },
-          scrollTrigger: { trigger: el, start: "top 88%", once: true },
+          scrollTrigger: { trigger: el, start: "top bottom-=24", once: true },
         });
       });
     },
@@ -107,6 +107,19 @@ export function Sobre() {
               </p>
             ))}
           </div>
+
+          {/* formação, no formato de uma linha de "registro" do terminal */}
+          <p data-reveal className="mono mt-8 flex flex-wrap items-baseline gap-x-3 gap-y-1 text-[0.9375rem]">
+            <span className="text-phosphor-dim">FORMAÇÃO:</span>
+            <span className="text-paper">
+              {perfil.formacao.curso}
+              {perfil.formacao.instituicao && ` · ${perfil.formacao.instituicao}`}
+            </span>
+            <span className="text-phosphor">
+              [{perfil.formacao.status.toUpperCase()} · {perfil.formacao.periodo.toUpperCase()}]
+            </span>
+          </p>
+
           <dl className="mt-12 grid grid-cols-3 gap-6 border-t border-phosphor-dim/60 pt-8 max-sm:grid-cols-1">
             <Counter value={stats.repoCount} from={0} label="REPOSITÓRIOS" />
             <Counter value={stats.languageCount} from={0} label="LINGUAGENS" />

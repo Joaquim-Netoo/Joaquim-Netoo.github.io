@@ -16,6 +16,14 @@ export const perfil = {
     "Escrevi minha primeira linha de código aos 14 anos e, desde então, passo boa parte do tempo dentro de uma tela.",
     "Desenvolvo para a web de ponta a ponta: interfaces que dão vontade de usar e sistemas que funcionam por trás delas. Gosto de transformar ideias em produto, e produto em algo que as pessoas realmente usam.",
   ],
+  /** Formação: aparece na seção "Sobre". Atualize o período a cada semestre. */
+  formacao: {
+    curso: "Ciência da Computação",
+    periodo: "5º período",
+    status: "cursando",
+    /** nome da faculdade (opcional) */
+    instituicao: "",
+  },
   /** Caminho da foto em public/images (ex.: "images/foto.webp"). Vazio = tela "SEM SINAL". PREENCHER */
   foto: "",
   /** Contatos */
