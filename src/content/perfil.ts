@@ -29,7 +29,7 @@ export const perfil = {
   /** Contatos */
   email: "netocamillo543@gmail.com",
   githubUrl: "https://github.com/Joaquim-Netoo",
-  linkedinUrl: "https://www.linkedin.com/in/joaquim-netoo-/",
+  linkedinUrl: "https://www.linkedin.com/in/joaquim-netoo-",
   /** Outras redes (opcional): { nome, url } */
   outrasRedes: [] as { nome: string; url: string }[],
   /** Currículo em PDF dentro de public/ (ex.: "curriculo.pdf"). Vazio = comando oculto. PREENCHER */
