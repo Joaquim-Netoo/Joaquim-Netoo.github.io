@@ -2,7 +2,7 @@ import { useRef } from "react";
 import { Kicker } from "@/components/Kicker";
 import { openProjeto } from "@/components/ProjetoDialog";
 import { SectionTitle } from "@/components/SectionTitle";
-import { eventos } from "@/lib/data";
+import { eventos, repoByName } from "@/lib/data";
 import { shortDate } from "@/lib/format";
 import { gsap, prefersReducedMotion, ScrollTrigger, useGSAP } from "@/lib/motion";
 
@@ -87,7 +87,10 @@ export function Atividade() {
                   >
                     {e.repo}
                   </button>
-                  <span className="hw ml-3">{e.kind === "criado" ? "+ CRIADO" : "↑ PUSH"}</span>
+                  <span className="hw ml-3">
+                    {e.kind === "criado" ? "+ CRIADO" : "↑ PUSH"}
+                    {repoByName.get(e.repo)?.faculdade && " · FACULDADE"}
+                  </span>
                 </div>
               </li>
             ))}

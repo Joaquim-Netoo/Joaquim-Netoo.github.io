@@ -12,8 +12,9 @@ import type { ProjetoManual, ProjetosConfig } from "../lib/types";
  */
 export const projetosConfig: ProjetosConfig = {
   githubUser: "Joaquim-Netoo",
-  // os 4 com site no ar e descrição; troque à vontade
-  destaques: ["forja", "apogeu", "direito-delas", "afya-admin"] as string[],
+  destaques: ["forja", "apogeu", "direito-delas", "checklist-campori"] as string[],
+  /** Trabalhos da faculdade: aparecem numa pasta FACULDADE\ separada no arquivo. */
+  faculdade: ["pweb-ts-estruturas", "tipos-de-typescript", "afya-admin"] as string[],
   ocultos: [] as string[],
   mostrarForks: false,
   mostrarArquivados: false,

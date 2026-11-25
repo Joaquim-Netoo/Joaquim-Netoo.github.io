@@ -105,7 +105,8 @@ export function ProjetoDialog() {
           }}
         >
           <span className="mono absolute top-0 left-4 z-10 -translate-y-1/2 bg-tube px-2 text-[0.8125rem] text-phosphor-dim max-sm:hidden">
-            C:\{perfil.nomeCurto}\PROJETOS\{repo.name.toUpperCase()}&gt;
+            C:\{perfil.nomeCurto}\PROJETOS\{repo.faculdade ? "FACULDADE\\" : ""}
+            {repo.name.toUpperCase()}&gt;
           </span>
 
           {/* o scroll fica aqui dentro: as legendas na borda não são cortadas */}
@@ -119,6 +120,7 @@ export function ProjetoDialog() {
               <DialogTitle className="mono glow text-[clamp(1.75rem,4.5vw,2.75rem)] leading-[1.02] font-normal break-words">
                 {repo.titulo}
               </DialogTitle>
+              {repo.faculdade && <p className="hw">TRABALHO DA FACULDADE</p>}
               {repo.papel && <p className="hw">PAPEL: {repo.papel.toUpperCase()}</p>}
               <DialogDescription className="max-w-[60ch] text-[1.0625rem] leading-relaxed text-paper">
                 {repo.description ?? "Sem descrição no GitHub."}

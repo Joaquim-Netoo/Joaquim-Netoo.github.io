@@ -63,4 +63,6 @@ export interface ProjetosConfig {
   mostrarArquivados: boolean;
   sobrescrever: Record<string, { titulo?: string; descricao?: string; capa?: string; papel?: string }>;
   manuais: ProjetoManual[];
+  /** repos de trabalhos da faculdade: ficam numa pasta FACULDADE\ separada no arquivo */
+  faculdade: string[];
 }

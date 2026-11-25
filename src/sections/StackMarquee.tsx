@@ -1,11 +1,13 @@
 import { useRef } from "react";
+import { perfil } from "@/content/perfil";
 import { linguagens } from "@/lib/data";
 import { gsap, prefersReducedMotion, ScrollTrigger, useGSAP } from "@/lib/motion";
 
 /** Faixa de linguagens calculada dos repos. A velocidade reage levemente ao scroll. */
 export function StackMarquee() {
   const ref = useRef<HTMLDivElement>(null);
-  const items = linguagens.map((l) => l.name.toUpperCase());
+  // linguagens dos repos + as que você usa fora deles (perfil.stackExtra.Linguagens)
+  const items = [...new Set([...linguagens.map((l) => l.name), ...(perfil.stackExtra.Linguagens ?? [])].map((n) => n.toUpperCase()))];
   const reduced = prefersReducedMotion();
 
   useGSAP(

@@ -39,6 +39,7 @@ const cfg: ProjetosConfig = {
   mostrarArquivados: false,
   sobrescrever: {},
   manuais: [],
+  faculdade: [],
 };
 
 describe("manualToRepo", () => {

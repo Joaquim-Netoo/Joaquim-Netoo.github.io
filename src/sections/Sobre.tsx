@@ -2,7 +2,7 @@ import { useRef } from "react";
 import { Kicker } from "@/components/Kicker";
 import { SectionTitle } from "@/components/SectionTitle";
 import { perfil } from "@/content/perfil";
-import { asset, stats } from "@/lib/data";
+import { asset, sitesNoAr, stats } from "@/lib/data";
 import { gsap, prefersReducedMotion, useGSAP } from "@/lib/motion";
 import { useReveal } from "@/lib/useReveal";
 
@@ -110,16 +110,7 @@ export function Sobre() {
           <dl className="mt-12 grid grid-cols-3 gap-6 border-t border-phosphor-dim/60 pt-8 max-sm:grid-cols-1">
             <Counter value={stats.repoCount} from={0} label="REPOSITÓRIOS" />
             <Counter value={stats.languageCount} from={0} label="LINGUAGENS" />
-            <div data-reveal className="grid gap-1">
-              <dt className="hw order-2">PRIMEIRO REPO</dt>
-              <dd className="mono glow order-1 text-[clamp(2.5rem,5vw,4.5rem)] leading-none tabular-nums">
-                <span className="text-[0.5em] text-phosphor-dim">DESDE </span>
-                <span className="sr-only">{stats.firstYear ?? "—"}</span>
-                <span aria-hidden="true" data-count={stats.firstYear ?? ""} data-from={1984}>
-                  {stats.firstYear ?? "—"}
-                </span>
-              </dd>
-            </div>
+            <Counter value={sitesNoAr} from={0} label="SITES NO AR" />
           </dl>
         </div>
       </div>
