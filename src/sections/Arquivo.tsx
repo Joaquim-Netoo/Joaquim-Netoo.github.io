@@ -116,11 +116,12 @@ export function Arquivo() {
                   </button>
                   {r.archived && <span className="ml-2 text-[0.75rem] opacity-70">[ARQ]</span>}
                   {r.fork && <span className="ml-2 text-[0.75rem] opacity-70">[FORK]</span>}
+                  {r.manual && <span className="ml-2 text-[0.75rem] opacity-70">[EXTERNO]</span>}
                 </td>
                 <td className="px-5 py-2.5 max-md:p-0 max-md:text-[0.8125rem] max-md:opacity-80">{r.language ?? "—"}</td>
-                <td className="px-5 py-2.5 text-right tabular-nums max-md:hidden">{r.stargazers_count}</td>
+                <td className="px-5 py-2.5 text-right tabular-nums max-md:hidden">{r.manual ? "—" : r.stargazers_count}</td>
                 <td className="px-5 py-2.5 text-right tabular-nums max-md:p-0 max-md:text-[0.8125rem] max-md:opacity-80">
-                  <span className="md:hidden">★ {r.stargazers_count} · </span>
+                  {!r.manual && <span className="md:hidden">★ {r.stargazers_count} · </span>}
                   {isoDay(r.pushed_at)}
                 </td>
               </tr>

@@ -43,6 +43,30 @@ export const projetosConfig = {
 
 Repositórios com o tópico **`portfolio`** no GitHub entram como destaque automaticamente.
 
+### Projetos fora do GitHub
+
+Trabalhos de cliente, sites no ar ou projetos sem repositório entram em `manuais`, no mesmo arquivo:
+
+```ts
+manuais: [
+  {
+    nome: "Loja da Padaria Silva",
+    descricao: "Site com cardápio e pedidos pelo WhatsApp.",
+    data: "2025-08",                          // AAAA-MM (ou só AAAA)
+    linguagem: "TypeScript",
+    tecnologias: ["next.js", "tailwind"],     // viram as etiquetas
+    link: "https://padariasilva.com.br",      // botão VER AO VIVO
+    codigo: "https://gitlab.com/...",         // opcional: botão VER CÓDIGO
+    capa: "images/projetos/padaria.webp",     // opcional: imagem em public/, proporção 2:1
+    papel: "Front-end e design",              // opcional
+    texto: "O que resolve, como foi feito, resultado.",
+    destaque: true,                           // aparece nos disquetes
+  },
+],
+```
+
+Eles aparecem no arquivo com a etiqueta `[EXTERNO]`, na linha do tempo e (com `destaque: true`) nos disquetes. Os números "REPOSITÓRIOS" da hero contam só o GitHub.
+
 ## Atualizar os repositórios
 
 ```bash

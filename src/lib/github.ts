@@ -1,5 +1,37 @@
 import { daysBetween, isoDay } from "./format";
-import type { ProjetosConfig, Repo } from "./types";
+import type { ProjetoManual, ProjetosConfig, Repo } from "./types";
+
+function slugify(s: string): string {
+  return s
+    .normalize("NFD")
+    .replace(/[̀-ͯ]/g, "")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+}
+
+/** Projeto cadastrado à mão (fora do GitHub) → mesmo formato de um repo. */
+export function manualToRepo(m: ProjetoManual): Repo {
+  const [ano, mes = "06"] = m.data.split("-");
+  const date = `${ano}-${mes.padStart(2, "0")}-15T12:00:00Z`;
+  return {
+    name: slugify(m.nome),
+    description: m.descricao,
+    html_url: m.codigo ?? "",
+    homepage: m.link ?? null,
+    language: m.linguagem ?? null,
+    topics: m.tecnologias ?? [],
+    stargazers_count: 0,
+    forks_count: 0,
+    pushed_at: date,
+    created_at: date,
+    fork: false,
+    archived: false,
+    readme: m.texto,
+    og: m.capa,
+    manual: true,
+  };
+}
 
 export type SortMode = "recentes" | "estrelas" | "nome";
 

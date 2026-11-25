@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from "@/components/ui/dialog";
 import { perfil } from "@/content/perfil";
 import { asset, repoByName, type ProjetoRepo } from "@/lib/data";
-import { relativeTime } from "@/lib/format";
+import { relativeTime, shortDate } from "@/lib/format";
 import { languageShare } from "@/lib/github";
 import { setState, useStore } from "@/lib/store";
 
@@ -45,7 +45,7 @@ export function ProjetoCapa({ repo, eager = false }: { repo: ProjetoRepo; eager?
         {repo.titulo.toUpperCase()}
       </span>
       <span className="hw absolute bottom-3 left-4">{repo.language ?? "SEM LINGUAGEM"}</span>
-      <span className="hw absolute right-4 bottom-3">★ {repo.stargazers_count}</span>
+      <span className="hw absolute right-4 bottom-3">{repo.manual ? "PROJETO" : `★ ${repo.stargazers_count}`}</span>
       <span className="crt-scanlines absolute inset-0 opacity-20" />
     </div>
   );
@@ -120,11 +120,18 @@ export function ProjetoDialog() {
             </div>
 
             <dl className="mono grid grid-cols-3 gap-px bg-phosphor-dim/40 text-[0.8125rem]">
-              {[
-                ["ESTRELAS", `★ ${repo.stargazers_count}`],
-                ["FORKS", String(repo.forks_count)],
-                ["ATUALIZADO", relativeTime(repo.pushed_at)],
-              ].map(([k, v]) => (
+              {(repo.manual
+                ? [
+                    ["ORIGEM", "FORA DO GITHUB"],
+                    ["LINGUAGEM", repo.language ?? "—"],
+                    ["DATA", shortDate(repo.created_at).slice(3)],
+                  ]
+                : [
+                    ["ESTRELAS", `★ ${repo.stargazers_count}`],
+                    ["FORKS", String(repo.forks_count)],
+                    ["ATUALIZADO", relativeTime(repo.pushed_at)],
+                  ]
+              ).map(([k, v]) => (
                 <div key={k} className="bg-tube p-3">
                   <dt className="text-phosphor-dim">{k}</dt>
                   <dd className="mt-1 text-paper">{v}</dd>
@@ -146,7 +153,7 @@ export function ProjetoDialog() {
 
             {repo.readme && (
               <div className="term px-5 pt-7 pb-5">
-                <span className="term-title">type README.md</span>
+                <span className="term-title">{repo.manual ? "type PROJETO.TXT" : "type README.md"}</span>
                 <div className="grid gap-3 text-[0.9875rem] leading-relaxed text-paper-dim">
                   {repo.readme.split("\n\n").map((p, i) => (
                     <p key={i}>{p}</p>
@@ -156,13 +163,15 @@ export function ProjetoDialog() {
             )}
 
             <div className="flex flex-wrap gap-3">
-              <Button asChild>
-                <a href={repo.html_url} target="_blank" rel="noreferrer">
-                  VER CÓDIGO <span aria-hidden="true">↗</span>
-                </a>
-              </Button>
+              {repo.html_url && (
+                <Button asChild>
+                  <a href={repo.html_url} target="_blank" rel="noreferrer">
+                    VER CÓDIGO <span aria-hidden="true">↗</span>
+                  </a>
+                </Button>
+              )}
               {repo.homepage && (
-                <Button asChild variant="outline">
+                <Button asChild variant={repo.html_url ? "outline" : "default"}>
                   <a href={repo.homepage} target="_blank" rel="noreferrer">
                     VER AO VIVO <span aria-hidden="true">↗</span>
                   </a>

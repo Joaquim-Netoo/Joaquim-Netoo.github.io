@@ -5,6 +5,7 @@ import {
   featuredRepos,
   languageShare,
   languageStats,
+  manualToRepo,
   profileStats,
   sortRepos,
   visibleRepos,
@@ -35,7 +36,42 @@ const cfg: ProjetosConfig = {
   mostrarForks: false,
   mostrarArquivados: false,
   sobrescrever: {},
+  manuais: [],
 };
+
+describe("manualToRepo", () => {
+  it("converte um projeto manual num Repo com slug, datas e links", () => {
+    const r = manualToRepo({
+      nome: "Loja da Padaria Silva",
+      descricao: "Site da padaria.",
+      data: "2025-08",
+      linguagem: "TypeScript",
+      tecnologias: ["next.js"],
+      link: "https://padaria.com",
+      texto: "Texto longo.",
+    });
+    expect(r).toMatchObject({
+      name: "loja-da-padaria-silva",
+      description: "Site da padaria.",
+      html_url: "",
+      homepage: "https://padaria.com",
+      language: "TypeScript",
+      topics: ["next.js"],
+      readme: "Texto longo.",
+      manual: true,
+      fork: false,
+      archived: false,
+    });
+    expect(r.created_at.startsWith("2025-08")).toBe(true);
+    expect(r.pushed_at).toBe(r.created_at);
+  });
+  it("aceita só o ano e remove acentos do slug", () => {
+    const r = manualToRepo({ nome: "Ação & Reação", descricao: "x", data: "2024" });
+    expect(r.name).toBe("acao-reacao");
+    expect(r.created_at.startsWith("2024-")).toBe(true);
+    expect(r.homepage).toBeNull();
+  });
+});
 
 describe("visibleRepos", () => {
   const repos = [r({ name: "a" }), r({ name: "f", fork: true }), r({ name: "z", archived: true }), r({ name: "h" })];
