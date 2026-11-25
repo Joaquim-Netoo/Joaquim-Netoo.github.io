@@ -1,0 +1,20 @@
+node_modules
+dist
+*.local
+.env
+.env.*
+!.env.example
+
+# validação local (screenshots)
+validacao/
+
+# skills/ferramentas locais
+.taste-skill/
+.impeccable/review/
+.impeccable/questions/
+.impeccable/mocks/
+
+.DS_Store
+Thumbs.db
+*.log
+.impeccable/hook.cache.json

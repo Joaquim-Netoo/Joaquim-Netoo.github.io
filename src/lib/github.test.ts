@@ -1,0 +1,193 @@
+import { describe, expect, it } from "vitest";
+import {
+  activity,
+  cleanReadme,
+  featuredRepos,
+  languageShare,
+  languageStats,
+  profileStats,
+  sortRepos,
+  visibleRepos,
+} from "./github";
+import { relativeTime } from "./format";
+import type { ProjetosConfig, Repo } from "./types";
+
+const base: Repo = {
+  name: "x",
+  description: null,
+  html_url: "https://github.com/u/x",
+  homepage: null,
+  language: "Python",
+  topics: [],
+  stargazers_count: 0,
+  forks_count: 0,
+  pushed_at: "2026-01-01T00:00:00Z",
+  created_at: "2025-01-01T00:00:00Z",
+  fork: false,
+  archived: false,
+};
+const r = (o: Partial<Repo>): Repo => ({ ...base, ...o });
+
+const cfg: ProjetosConfig = {
+  githubUser: "u",
+  destaques: [],
+  ocultos: [],
+  mostrarForks: false,
+  mostrarArquivados: false,
+  sobrescrever: {},
+};
+
+describe("visibleRepos", () => {
+  const repos = [r({ name: "a" }), r({ name: "f", fork: true }), r({ name: "z", archived: true }), r({ name: "h" })];
+  it("remove forks, arquivados e ocultos por padrão", () => {
+    expect(visibleRepos(repos, { ...cfg, ocultos: ["h"] }).map((x) => x.name)).toEqual(["a"]);
+  });
+  it("respeita mostrarForks e mostrarArquivados", () => {
+    const names = visibleRepos(repos, { ...cfg, mostrarForks: true, mostrarArquivados: true }).map((x) => x.name);
+    expect(names).toEqual(["a", "f", "z", "h"]);
+  });
+});
+
+describe("featuredRepos", () => {
+  const repos = [
+    r({ name: "a", stargazers_count: 1 }),
+    r({ name: "b", stargazers_count: 5 }),
+    r({ name: "c", stargazers_count: 5, pushed_at: "2026-06-01T00:00:00Z" }),
+    r({ name: "d", stargazers_count: 3 }),
+    r({ name: "e", stargazers_count: 2 }),
+    r({ name: "p", stargazers_count: 0, topics: ["portfolio"] }),
+  ];
+  it("sem destaques: top 4 por estrelas (desempate pelo mais recente) + tópico portfolio", () => {
+    expect(featuredRepos(repos, cfg).map((x) => x.name)).toEqual(["c", "b", "d", "e", "p"]);
+  });
+  it("com destaques: usa a ordem da config e ignora nomes inexistentes", () => {
+    expect(featuredRepos(repos, { ...cfg, destaques: ["e", "nao-existe", "a"] }).map((x) => x.name)).toEqual([
+      "e",
+      "a",
+      "p",
+    ]);
+  });
+  it("não duplica um repo que está nos destaques e tem o tópico", () => {
+    expect(featuredRepos(repos, { ...cfg, destaques: ["p"] }).map((x) => x.name)).toEqual(["p"]);
+  });
+  it("nunca destaca um repo oculto", () => {
+    expect(featuredRepos(repos, { ...cfg, ocultos: ["p", "c"] }).map((x) => x.name)).toEqual(["b", "d", "e", "a"]);
+  });
+});
+
+describe("languageStats / languageShare", () => {
+  it("conta repos por linguagem e ordena desc", () => {
+    const repos = [
+      r({ language: "Python" }),
+      r({ language: "TypeScript", languages: { TypeScript: 10, CSS: 2 } }),
+      r({ language: "Python" }),
+      r({ language: null }),
+    ];
+    expect(languageStats(repos)).toEqual([
+      { name: "Python", count: 2 },
+      { name: "CSS", count: 1 },
+      { name: "TypeScript", count: 1 },
+    ]);
+  });
+  it("calcula porcentagens", () => {
+    expect(languageShare({ TypeScript: 750, CSS: 250 })).toEqual([
+      { name: "TypeScript", pct: 75 },
+      { name: "CSS", pct: 25 },
+    ]);
+  });
+  it("agrupa linguagens < 1% em Outras", () => {
+    expect(languageShare({ A: 995, B: 3, C: 2 })).toEqual([
+      { name: "A", pct: 99.5 },
+      { name: "Outras", pct: 0.5 },
+    ]);
+  });
+});
+
+describe("profileStats", () => {
+  it("conta repos, linguagens, dias desde o último push e ano do primeiro repo", () => {
+    const now = new Date("2026-11-24T12:00:00Z");
+    const repos = [
+      r({ language: "Go", pushed_at: "2026-11-21T12:00:00Z", created_at: "2023-05-01T00:00:00Z" }),
+      r({ language: "Python", pushed_at: "2026-10-01T00:00:00Z", created_at: "2021-02-01T00:00:00Z" }),
+    ];
+    expect(profileStats(repos, now)).toEqual({ repoCount: 2, languageCount: 2, lastPushDays: 3, firstYear: 2021 });
+  });
+  it("lista vazia não quebra", () => {
+    expect(profileStats([], new Date())).toEqual({ repoCount: 0, languageCount: 0, lastPushDays: null, firstYear: null });
+  });
+});
+
+describe("sortRepos", () => {
+  const repos = [
+    r({ name: "beta", stargazers_count: 1, pushed_at: "2026-01-01T00:00:00Z" }),
+    r({ name: "Alfa", stargazers_count: 9, pushed_at: "2025-01-01T00:00:00Z" }),
+    r({ name: "gama", stargazers_count: 4, pushed_at: "2026-05-01T00:00:00Z" }),
+  ];
+  it("ordena", () => {
+    expect(sortRepos(repos, "recentes").map((x) => x.name)).toEqual(["gama", "beta", "Alfa"]);
+    expect(sortRepos(repos, "estrelas").map((x) => x.name)).toEqual(["Alfa", "gama", "beta"]);
+    expect(sortRepos(repos, "nome").map((x) => x.name)).toEqual(["Alfa", "beta", "gama"]);
+  });
+  it("não muta o array original", () => {
+    const copy = [...repos];
+    sortRepos(repos, "nome");
+    expect(repos).toEqual(copy);
+  });
+});
+
+describe("activity", () => {
+  it("gera eventos dos últimos 12 meses, mais recentes primeiro", () => {
+    const now = new Date("2026-11-24T00:00:00Z");
+    const repos = [
+      r({ name: "a", created_at: "2026-03-01T00:00:00Z", pushed_at: "2026-11-01T00:00:00Z" }),
+      r({ name: "b", created_at: "2020-01-01T00:00:00Z", pushed_at: "2025-01-01T00:00:00Z" }),
+    ];
+    expect(activity(repos, now)).toEqual([
+      { repo: "a", kind: "push", date: "2026-11-01T00:00:00Z" },
+      { repo: "a", kind: "criado", date: "2026-03-01T00:00:00Z" },
+    ]);
+  });
+  it("não repete push quando é o mesmo dia da criação", () => {
+    const now = new Date("2026-11-24T00:00:00Z");
+    const repos = [r({ name: "a", created_at: "2026-03-01T00:00:00Z", pushed_at: "2026-03-01T05:00:00Z" })];
+    expect(activity(repos, now)).toEqual([{ repo: "a", kind: "criado", date: "2026-03-01T00:00:00Z" }]);
+  });
+});
+
+describe("cleanReadme", () => {
+  it("remove imagens, badges, html e títulos e corta em ~600 caracteres", () => {
+    const md = [
+      "# Meu Projeto",
+      "[![build](https://x/badge.svg)](https://x)",
+      "![screenshot](img.png)",
+      '<p align="center"><img src="a.png"></p>',
+      "",
+      "Um app que faz **coisas** úteis com [links](https://x.com).",
+      "",
+      "```bash",
+      "npm i",
+      "```",
+      "",
+      "Segundo parágrafo.",
+    ].join("\n");
+    expect(cleanReadme(md)).toBe("Um app que faz coisas úteis com links.\n\nSegundo parágrafo.");
+  });
+  it("corta textos longos numa fronteira de palavra com reticências", () => {
+    const out = cleanReadme("palavra ".repeat(200));
+    expect(out.length).toBeLessThanOrEqual(601);
+    expect(out.endsWith("…")).toBe(true);
+  });
+});
+
+describe("relativeTime", () => {
+  const now = new Date("2026-11-24T12:00:00Z");
+  it("formata em pt-BR", () => {
+    expect(relativeTime("2026-11-24T08:00:00Z", now)).toBe("hoje");
+    expect(relativeTime("2026-11-23T08:00:00Z", now)).toBe("ontem");
+    expect(relativeTime("2026-11-21T12:00:00Z", now)).toBe("há 3 dias");
+    expect(relativeTime("2026-11-03T12:00:00Z", now)).toBe("há 3 semanas");
+    expect(relativeTime("2026-06-01T12:00:00Z", now)).toBe("há 5 meses");
+    expect(relativeTime("2025-11-01T12:00:00Z", now)).toBe("há 1 ano");
+    expect(relativeTime("2023-01-01T12:00:00Z", now)).toBe("há 3 anos");
+  });
+});

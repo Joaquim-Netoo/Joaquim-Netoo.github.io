@@ -1,0 +1,73 @@
+/* ─── Fontes locais (OFL) ─────────────────────────────────────────── */
+@font-face {
+  font-family: "Departure Mono";
+  src: url("/fonts/DepartureMono-Regular.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Atkinson Hyperlegible Next";
+  src: url("/fonts/AtkinsonHyperlegibleNext-Variable.woff2") format("woff2");
+  font-weight: 200 800;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Newsreader";
+  src: url("/fonts/Newsreader-Italic.woff2") format("woff2");
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+}
+
+/* ─── Tokens ──────────────────────────────────────────────────────── */
+:root,
+:root[data-phosphor="green"] {
+  --tube: #0a0c0a;
+  --tube-2: #111511;
+  --tube-3: #171c17;
+
+  --phosphor: #5cff8f;
+  --phosphor-dim: #3e8f5a;
+  --phosphor-rgb: 92 255 143;
+  --ghost: rgba(92, 255, 143, 0.08);
+
+  --case: #d6cdb8;
+  --case-shadow: #8a8270;
+  --paper: #ece6d8;
+  --paper-dim: #a39e90;
+  --led: #ff4b2b;
+
+  /* Movimento (Emil Kowalski) — espelhados no CustomEase do GSAP em src/lib/motion.ts */
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
+  --dur-press: 140ms;
+  --dur-hover: 180ms;
+  --dur-enter: 560ms;
+
+  /* Tipografia */
+  --font-mono: "Departure Mono", ui-monospace, "Cascadia Mono", "Consolas", monospace;
+  --font-serif: "Newsreader", "Iowan Old Style", "Georgia", serif;
+  --font-body: "Atkinson Hyperlegible Next", "Segoe UI Variable Text", "Helvetica Neue", sans-serif;
+
+  --text-display: clamp(2.75rem, 10.5vw, 11.25rem); /* 44 → 180 px */
+  --text-title: clamp(2.5rem, 7.4vw, 7.5rem); /* 40 → 120 px */
+  --text-lead: clamp(1.25rem, 1.05rem + 0.9vw, 1.75rem);
+  --text-body: clamp(1rem, 0.96rem + 0.2vw, 1.125rem);
+  --text-label: 0.8125rem;
+
+  /* Espaço */
+  --gutter: clamp(16px, 4vw, 56px);
+  --section-gap: clamp(112px, 14vw, 200px);
+  --maxw: 1440px;
+
+  color-scheme: dark;
+}
+
+:root[data-phosphor="amber"] {
+  --phosphor: #ffb547;
+  --phosphor-dim: #a9742c;
+  --phosphor-rgb: 255 181 71;
+  --ghost: rgba(255, 181, 71, 0.08);
+}

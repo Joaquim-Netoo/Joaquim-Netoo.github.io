@@ -1,0 +1,328 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+@import "./styles/tokens.css";
+
+/* shadcn/ui lê estes tokens: todos apontam para a paleta "Ligue a Tela". */
+@theme inline {
+  --font-sans: var(--font-body);
+  --font-mono: var(--font-mono);
+  --font-serif: var(--font-serif);
+  --font-heading: var(--font-mono);
+
+  --color-tube: var(--tube);
+  --color-tube-2: var(--tube-2);
+  --color-tube-3: var(--tube-3);
+  --color-phosphor: var(--phosphor);
+  --color-phosphor-dim: var(--phosphor-dim);
+  --color-paper: var(--paper);
+  --color-paper-dim: var(--paper-dim);
+  --color-case: var(--case);
+  --color-led: var(--led);
+
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --color-foreground: var(--foreground);
+  --color-background: var(--background);
+
+  --radius-sm: 0px;
+  --radius-md: 0px;
+  --radius-lg: 0px;
+  --radius-xl: 0px;
+  --radius-2xl: 0px;
+  --radius-3xl: 0px;
+  --radius-4xl: 0px;
+}
+
+:root {
+  --background: var(--tube);
+  --foreground: var(--paper);
+  --card: var(--tube-2);
+  --card-foreground: var(--paper);
+  --popover: var(--tube-2);
+  --popover-foreground: var(--paper);
+  --primary: var(--phosphor);
+  --primary-foreground: var(--tube);
+  --secondary: var(--tube-3);
+  --secondary-foreground: var(--paper);
+  --muted: var(--tube-3);
+  --muted-foreground: var(--paper-dim);
+  --accent: var(--tube-3);
+  --accent-foreground: var(--phosphor);
+  --destructive: var(--led);
+  --border: var(--phosphor-dim);
+  --input: var(--phosphor-dim);
+  --ring: var(--phosphor);
+  --radius: 0px;
+}
+
+/* ─── Base ────────────────────────────────────────────────────────── */
+@layer base {
+  * {
+    border-color: var(--border);
+  }
+  html {
+    background: var(--tube);
+    -webkit-text-size-adjust: 100%;
+    scrollbar-color: var(--phosphor-dim) var(--tube);
+  }
+  html.lenis,
+  html.lenis body {
+    height: auto;
+  }
+  .lenis.lenis-stopped {
+    overflow: clip;
+  }
+  body {
+    background: var(--tube);
+    color: var(--paper);
+    font-family: var(--font-body);
+    font-size: var(--text-body);
+    line-height: 1.55;
+    font-feature-settings: "ss01", "tnum" 0;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    overflow-x: clip;
+  }
+  ::selection {
+    background: var(--phosphor);
+    color: var(--tube);
+  }
+  :focus-visible {
+    outline: 2px solid var(--phosphor);
+    outline-offset: 3px;
+  }
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
+  img {
+    max-width: 100%;
+    display: block;
+  }
+  h1,
+  h2,
+  h3 {
+    text-wrap: balance;
+  }
+  p {
+    text-wrap: pretty;
+  }
+}
+
+/* ─── Utilitários do mundo "Ligue a Tela" ─────────────────────────── */
+@layer components {
+  .wrap {
+    width: 100%;
+    max-width: var(--maxw);
+    margin-inline: auto;
+    padding-inline: var(--gutter);
+  }
+
+  .mono {
+    font-family: var(--font-mono);
+    font-weight: 400;
+    letter-spacing: 0;
+  }
+
+  /* Label de hardware: CH 01, 640K OK… */
+  .hw {
+    font-family: var(--font-mono);
+    font-size: var(--text-label);
+    line-height: 1.2;
+    color: var(--phosphor-dim);
+  }
+
+  /* Brilho de fósforo: só em títulos, nunca em parágrafos */
+  .glow {
+    color: var(--phosphor);
+    text-shadow:
+      0 0 0.04em rgb(var(--phosphor-rgb) / 0.55),
+      0 0 0.32em rgb(var(--phosphor-rgb) / 0.22);
+  }
+
+  /* Cursor de bloco piscando a 1 Hz (nunca mais rápido) */
+  .block-cursor {
+    display: inline-block;
+    width: 0.6em;
+    height: 1em;
+    margin-left: 0.12em;
+    vertical-align: -0.12em;
+    background: var(--phosphor);
+    animation: blink 1s steps(1, end) infinite;
+  }
+  @keyframes blink {
+    50% {
+      opacity: 0;
+    }
+  }
+
+  /* Moldura de janela de terminal: 1 px, cantos retos, título na borda superior */
+  .term {
+    position: relative;
+    border: 1px solid var(--phosphor-dim);
+    background: var(--tube);
+  }
+  .term > .term-title {
+    position: absolute;
+    top: 0;
+    left: 14px;
+    transform: translateY(-50%);
+    z-index: 2;
+    padding-inline: 8px;
+    background: inherit;
+    background-color: var(--tube);
+    font-family: var(--font-mono);
+    font-size: var(--text-label);
+    line-height: 1;
+    color: var(--phosphor-dim);
+    white-space: nowrap;
+  }
+
+  /* Botão de terminal */
+  .btn-term {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.6em;
+    min-height: 48px;
+    padding: 0 22px;
+    font-family: var(--font-mono);
+    font-size: 0.9375rem;
+    color: var(--phosphor);
+    border: 1px solid var(--phosphor);
+    background: transparent;
+    cursor: pointer;
+    transition:
+      background-color var(--dur-hover) ease,
+      color var(--dur-hover) ease,
+      transform var(--dur-press) var(--ease-out);
+  }
+  .btn-term[data-variant="solid"] {
+    background: var(--phosphor);
+    color: var(--tube);
+  }
+  .btn-term:active {
+    transform: scale(0.97);
+  }
+  @media (hover: hover) and (pointer: fine) {
+    .btn-term:hover {
+      background: var(--phosphor);
+      color: var(--tube);
+    }
+    .btn-term[data-variant="solid"]:hover {
+      background: var(--paper);
+      border-color: var(--paper);
+    }
+  }
+
+  /* Link sublinhado em fósforo */
+  .link-term {
+    color: var(--phosphor);
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.22em;
+    transition: color var(--dur-hover) ease;
+  }
+  @media (hover: hover) and (pointer: fine) {
+    .link-term:hover {
+      color: var(--paper);
+    }
+  }
+
+  /* Módulo de hardware "encaixando" no slot */
+  @media (hover: hover) and (pointer: fine) {
+    .slot:hover {
+      transform: translateY(2px);
+      border-color: var(--phosphor);
+    }
+  }
+
+  /* Burn-in: cópia fantasma atrás do título */
+  [data-burn] {
+    position: relative;
+  }
+  [data-burn]::before {
+    content: attr(data-burn);
+    position: absolute;
+    inset: 0;
+    transform: translate(0.035em, 0.03em);
+    color: var(--ghost);
+    text-shadow: none;
+    pointer-events: none;
+    z-index: -1;
+    white-space: inherit;
+    transition: opacity 300ms ease-out, transform 300ms var(--ease-out);
+  }
+  [data-burn].is-burning::before {
+    color: rgb(var(--phosphor-rgb) / 0.22);
+    transform: translate(0.06em, 0.12em);
+    opacity: 0;
+  }
+}
+
+/* ─── Camadas de CRT (globais, sem eventos de ponteiro) ───────────── */
+.crt-layer {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 60;
+}
+.crt-scanlines {
+  background: repeating-linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0) 0px,
+    rgba(0, 0, 0, 0) 2px,
+    rgba(0, 0, 0, 1) 3px,
+    rgba(0, 0, 0, 0) 4px
+  );
+  opacity: 0.05;
+}
+.crt-vignette {
+  background: radial-gradient(ellipse 120% 115% at 50% 50%, transparent 62%, rgba(0, 0, 0, 0.55) 100%);
+}
+.crt-noise {
+  opacity: 0.03;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+}
+
+/* Durante a intro, o portfólio existe no DOM (SEO), mas fica atrás da camada 3D */
+html[data-intro="on"] body {
+  overflow: hidden;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .block-cursor {
+    animation: none;
+  }
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  [data-burn]::before {
+    transition: none;
+  }
+}
+
+/* Telas touch: nada de hover que grude */
+@media (hover: none) {
+  .btn-term:hover {
+    background: transparent;
+  }
+}
