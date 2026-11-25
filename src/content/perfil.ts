@@ -37,7 +37,7 @@ export const perfil = {
     "Bibliotecas JS": ["GSAP", "Three.js"],
     "Back-end": [] as string[],
     Dados: [] as string[],
-    Ferramentas: ["PostgreSQL", "Git", "GitHub Pages"],
+    Ferramentas: ["VS Code", "Figma", "Blender", "PostgreSQL", "Git", "GitHub Pages"],
   } as Record<string, string[]>,
   /** URL final do site (para Open Graph). PREENCHER depois do deploy */
   siteUrl: "",
