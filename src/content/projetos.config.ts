@@ -39,10 +39,12 @@ export const projetosConfig: ProjetosConfig = {
       linguagem: "TypeScript",
       tecnologias: ["HTML", "CSS", "JavaScript", "TypeScript", "React", "Supabase", "Cloudflare Pages", "PWA"],
       link: "https://teste.panata-75t.pages.dev/",
+      // tela de dentro do app (logado com o acesso de demonstração)
+      capa: "images/projetos/panata.webp",
       texto:
-        "Web app feito para o dia a dia de uma fábrica de pão de queijo: cadastro de clientes, registro de vendas e controle de recebimentos.\n\nFoi pensado para ser instalado no telefone (PWA) e abrir como um aplicativo, sem passar por loja. Front-end em React com TypeScript, dados e autenticação no Supabase e hospedagem no Cloudflare Pages.",
+        "Web app feito para o dia a dia de uma fábrica de pão de queijo: clientes, novas vendas, rota de entregas, estoque, produção do dia, valores a receber e relatórios da semana e do mês, com lembretes de backup e de contagem do estoque.\n\nFoi pensado para ser instalado no telefone (PWA) e abrir como um aplicativo, sem passar por loja. Front-end em React com TypeScript, dados e autenticação no Supabase e hospedagem no Cloudflare Pages.",
       destaque: false,
-      acessoDemo: { email: "integracao@example.com", senha: "integracao@example.com" },
+      acessoDemo: { email: "integracao@example.com", senha: "iavIrbfDEsmFA2NLN9kqAfvV" },
       obs: "Feito no plano gratuito do Supabase: se o app ficar uma semana sem uso, o banco é pausado e a demonstração pode sair do ar até ser reativada.",
     },
     // Exemplo (copie, preencha e tire as barras "//" para ativar):

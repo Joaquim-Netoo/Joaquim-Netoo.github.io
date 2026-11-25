@@ -35,9 +35,9 @@ export const perfil = {
     "Front-end": ["React", "Blazor WebAssembly", "MudBlazor"],
     /** bibliotecas de JavaScript (também detectadas sozinhas nos seus sites) */
     "Bibliotecas JS": ["GSAP", "Three.js"],
-    "Back-end": [] as string[],
+    "Back-end": ["Supabase", "PostgreSQL", "Cloudflare Pages"],
     Dados: [] as string[],
-    Ferramentas: ["VS Code", "Figma", "Blender", "PostgreSQL", "Git", "GitHub Pages"],
+    Ferramentas: ["VS Code", "Figma", "Blender", "Git", "GitHub"],
   } as Record<string, string[]>,
   /** URL final do site (para Open Graph). PREENCHER depois do deploy */
   siteUrl: "",

@@ -1,6 +1,6 @@
 {
   "user": "Joaquim-Netoo",
-  "generatedAt": "2026-11-25T06:01:48.445Z",
+  "generatedAt": "2026-11-25T06:06:47.339Z",
   "source": "api",
   "repos": [
     {
@@ -204,7 +204,5 @@
       "og": "og/portfolio.webp"
     }
   ],
-  "capasManuais": {
-    "app-panata": "og/manual-app-panata.webp"
-  }
+  "capasManuais": {}
 }
