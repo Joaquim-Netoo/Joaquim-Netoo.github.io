@@ -18,3 +18,6 @@ validacao/
 Thumbs.db
 *.log
 .impeccable/hook.cache.json
+
+# skills de design instaladas localmente (reinstalar com npx skills; ver skills-lock.json)
+.claude/
