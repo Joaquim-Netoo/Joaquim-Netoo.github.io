@@ -1,18 +1,22 @@
 import raw from "@/data/github.json";
 import { perfil } from "@/content/perfil";
 import { projetosConfig } from "@/content/projetos.config";
-import { activity, featuredRepos, languageStats, manualToRepo, profileStats, visibleRepos } from "./github";
+import { activity, detectStack, featuredRepos, languageStats, manualToRepo, profileStats, visibleRepos } from "./github";
 import type { GithubData, Repo } from "./types";
 
 // o JSON muda a cada build: o tipo inferido pelo TS não serve, o contrato é GithubData
 const data = raw as unknown as GithubData;
 
 /** Aplica os textos de `sobrescrever` da config. */
-function applyOverrides(r: Repo): Repo & { titulo: string; papel?: string; faculdade: boolean } {
+function applyOverrides(r: Repo): Repo & { titulo: string; papel?: string; faculdade: boolean; stack: string[] } {
   const o = projetosConfig.sobrescrever[r.name] ?? {};
   const manual = r.manual ? projetosConfig.manuais.find((m) => manualToRepo(m).name === r.name) : undefined;
+  // tecnologias: detectadas no build (ou só as linguagens) + as acrescentadas na config
+  const base = r.stack ?? (r.languages ? detectStack(r.languages, "", []) : r.language ? [r.language] : []);
+  const stack = [...new Set([...base, ...(r.manual ? r.topics : []), ...(o.tecnologias ?? [])])];
   return {
     ...r,
+    stack,
     titulo: o.titulo ?? manual?.nome ?? r.name,
     description: o.descricao ?? r.description,
     og: o.capa ?? r.og,

@@ -61,7 +61,9 @@ function ProjetoCard({ repo }: { repo: ProjetoRepo }) {
         </h3>
         <p className="line-clamp-3 max-w-[52ch] text-paper">{repo.description ?? "Sem descrição no GitHub."}</p>
         <p className="mono mt-auto flex flex-wrap gap-x-3 pt-2 text-[0.8125rem] text-phosphor-dim">
-          <span>{repo.language ?? "—"}</span>
+          <span className="text-paper-dim">
+            {repo.stack.length ? repo.stack.map((s) => (s === "JavaScript" ? "JS" : s === "TypeScript" ? "TS" : s)).join(" · ") : "—"}
+          </span>
           <span aria-hidden="true">·</span>
           {repo.manual ? (
             <span>{shortDate(repo.created_at).slice(3)}</span>

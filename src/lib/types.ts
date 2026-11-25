@@ -19,6 +19,18 @@ export interface Repo {
   og?: string;
   /** true = projeto cadastrado à mão (fora do GitHub) */
   manual?: boolean;
+  /** tecnologias detectadas (linguagens + bibliotecas do site no ar) */
+  stack?: string[];
+}
+
+/** Ajustes manuais de um repo do GitHub (projetos.config.ts → sobrescrever). */
+export interface Sobrescrita {
+  titulo?: string;
+  descricao?: string;
+  capa?: string;
+  papel?: string;
+  /** tecnologias a acrescentar às detectadas (ex.: ["Blazor WebAssembly"]) */
+  tecnologias?: string[];
 }
 
 /** Projeto fora do GitHub, cadastrado em projetos.config.ts → manuais. */
@@ -61,7 +73,7 @@ export interface ProjetosConfig {
   ocultos: string[];
   mostrarForks: boolean;
   mostrarArquivados: boolean;
-  sobrescrever: Record<string, { titulo?: string; descricao?: string; capa?: string; papel?: string }>;
+  sobrescrever: Record<string, Sobrescrita>;
   manuais: ProjetoManual[];
   /** repos de trabalhos da faculdade: ficam numa pasta FACULDADE\ separada no arquivo */
   faculdade: string[];

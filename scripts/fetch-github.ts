@@ -8,7 +8,15 @@ import { copyFileSync, existsSync, mkdirSync, readFileSync, statSync, writeFileS
 import path from "node:path";
 import sharp from "sharp";
 import { PLACEHOLDER_USER, projetosConfig } from "../src/content/projetos.config";
-import { cleanReadme, featuredRepos, firstSentence, metaDescription, sortRepos, visibleRepos } from "../src/lib/github";
+import {
+  cleanReadme,
+  detectStack,
+  featuredRepos,
+  firstSentence,
+  metaDescription,
+  sortRepos,
+  visibleRepos,
+} from "../src/lib/github";
 import type { GithubData, Repo } from "../src/lib/types";
 
 const ROOT = path.resolve(import.meta.dirname, "..");
@@ -107,20 +115,38 @@ async function fetchDetails(user: string, repo: Repo, previous?: Repo): Promise<
  */
 async function fetchLive(repo: Repo): Promise<void> {
   const url = repo.homepage || pagesCandidates.get(repo.name);
+  let html = "";
+  const scripts: string[] = [];
   if (url) {
     try {
       const res = await fetch(url, { redirect: "follow", signal: AbortSignal.timeout(10_000) });
       if (res.ok) {
         if (!repo.homepage) repo.homepage = url;
+        html = await res.text();
         if (!repo.description) {
-          const desc = metaDescription(await res.text());
+          const desc = metaDescription(html);
           if (desc) repo.description = desc;
+        }
+        // scripts do próprio site (até 6), para achar bibliotecas importadas lá dentro
+        const srcs = [...html.matchAll(/<script\b[^>]*\bsrc=["']([^"']+)["']/gi)]
+          .map((m) => m[1])
+          .filter((s) => !/^https?:\/\//i.test(s) || s.startsWith(new URL(res.url).origin))
+          .slice(0, 6);
+        for (const s of srcs) {
+          try {
+            const js = await fetch(new URL(s, res.url), { signal: AbortSignal.timeout(8_000) });
+            if (js.ok) scripts.push((await js.text()).slice(0, 400_000));
+          } catch {
+            /* script inacessível: ignora */
+          }
         }
       }
     } catch {
       /* site fora do ar: segue sem o link */
     }
   }
+  // tecnologias: linguagens do GitHub + o que o HTML/JS do site revela (CSS/JS embutidos, GSAP, Three.js…)
+  if (repo.languages || html) repo.stack = detectStack(repo.languages ?? (repo.language ? { [repo.language]: 1 } : {}), html, scripts);
   if (!repo.description && repo.readme) repo.description = firstSentence(repo.readme);
 }
 

@@ -4,7 +4,7 @@ import { Dialog, DialogContent, DialogDescription, DialogTitle } from "@/compone
 import { perfil } from "@/content/perfil";
 import { asset, repoByName, type ProjetoRepo } from "@/lib/data";
 import { relativeTime, shortDate } from "@/lib/format";
-import { languageShare } from "@/lib/github";
+import { languageShare, stackCurta } from "@/lib/github";
 import { setState, useStore } from "@/lib/store";
 
 const SHADES = [1, 0.68, 0.46, 0.3, 0.18];
@@ -50,7 +50,7 @@ export function ProjetoCapa({ repo, eager = false, fill = false }: { repo: Proje
       >
         {repo.titulo.toUpperCase()}
       </span>
-      <span className="hw absolute bottom-3 left-4">{repo.language ?? "SEM LINGUAGEM"}</span>
+      <span className="hw absolute bottom-3 left-4">{repo.stack.length ? stackCurta(repo.stack).texto : "—"}</span>
       <span className="hw absolute right-4 bottom-3">{repo.manual ? "PROJETO" : repo.stargazers_count > 0 ? `★ ${repo.stargazers_count}` : ""}</span>
       <span className="crt-scanlines absolute inset-0 opacity-20" />
     </div>
@@ -131,8 +131,8 @@ export function ProjetoDialog() {
               {(repo.manual
                 ? [
                     ["ORIGEM", "FORA DO GITHUB"],
-                    ["LINGUAGEM", repo.language ?? "—"],
                     ["DATA", shortDate(repo.created_at).slice(3)],
+                    ["SITE", repo.homepage ? "NO AR" : "—"],
                   ]
                 : repo.stargazers_count + repo.forks_count > 0
                   ? [
@@ -142,9 +142,9 @@ export function ProjetoDialog() {
                     ]
                   : [
                       // sem estrelas/forks: datas dizem mais do que "★ 0"
-                      ["LINGUAGEM", repo.language ?? "—"],
                       ["CRIADO", shortDate(repo.created_at).slice(3)],
                       ["ATUALIZADO", relativeTime(repo.pushed_at)],
+                      ["SITE", repo.homepage ? "NO AR" : "—"],
                     ]
               ).map(([k, v]) => (
                 <div key={k} className="bg-tube p-3">
@@ -154,16 +154,32 @@ export function ProjetoDialog() {
               ))}
             </dl>
 
-            <LanguageBar repo={repo} />
+            {/* tudo o que foi usado: linguagens, bibliotecas e tópicos do GitHub, sem repetir */}
+            {(() => {
+              const vistos = new Set(repo.stack.map((s) => s.toLowerCase()));
+              const extras = repo.topics.filter((t) => !vistos.has(t.toLowerCase()));
+              const itens = [...repo.stack, ...extras];
+              if (itens.length === 0) return null;
+              return (
+                <div className="grid gap-3">
+                  <p className="hw">FEITO COM</p>
+                  <ul className="flex flex-wrap gap-2" aria-label="Feito com">
+                    {itens.map((t) => (
+                      <li key={t}>
+                        <Badge>{t}</Badge>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              );
+            })()}
 
-            {repo.topics.length > 0 && (
-              <ul className="flex flex-wrap gap-2" aria-label="Tópicos">
-                {repo.topics.map((t) => (
-                  <li key={t}>
-                    <Badge>{t}</Badge>
-                  </li>
-                ))}
-              </ul>
+            {/* proporção do código só ajuda quando há mais de uma linguagem no repositório */}
+            {repo.languages && Object.keys(repo.languages).length > 1 && (
+              <div className="grid gap-3">
+                <p className="hw">CÓDIGO NO REPOSITÓRIO</p>
+                <LanguageBar repo={repo} />
+              </div>
             )}
 
             {repo.readme && (

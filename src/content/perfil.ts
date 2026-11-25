@@ -33,6 +33,8 @@ export const perfil = {
   stackExtra: {
     Linguagens: ["SQL"],
     "Front-end": ["React", "Blazor WebAssembly", "MudBlazor"],
+    /** bibliotecas de JavaScript (também detectadas sozinhas nos seus sites) */
+    "Bibliotecas JS": ["GSAP", "Three.js"],
     "Back-end": [] as string[],
     Dados: [] as string[],
     Ferramentas: ["PostgreSQL", "Git", "GitHub Pages"],

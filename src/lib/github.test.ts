@@ -2,6 +2,8 @@ import { describe, expect, it } from "vitest";
 import {
   activity,
   cleanReadme,
+  detectStack,
+  stackCurta,
   featuredRepos,
   languageShare,
   languageStats,
@@ -233,6 +235,34 @@ describe("metaDescription / firstSentence", () => {
     const long = firstSentence("palavra ".repeat(60));
     expect(long.length).toBeLessThanOrEqual(161);
     expect(long.endsWith("…")).toBe(true);
+  });
+});
+
+describe("detectStack / stackCurta", () => {
+  it("lê HTML inline: CSS, JS, GSAP e Three.js (CDN)", () => {
+    const html = `<style>a{}</style><script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+      <script>var s="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"</script>`;
+    expect(detectStack({ HTML: 100 }, html, [])).toEqual(["HTML", "CSS", "JavaScript", "GSAP", "Three.js"]);
+  });
+  it("lê import map, CSS externo e scripts do site", () => {
+    const html = `<link rel="stylesheet" href="css/app.css"><script type="importmap">{"imports":{"three":"./vendor/three.module.min.js"}}</script>`;
+    expect(detectStack({ JavaScript: 10, CSS: 5, HTML: 1 }, html, ["gsap.to(x)"])).toEqual([
+      "HTML",
+      "CSS",
+      "JavaScript",
+      "GSAP",
+      "Three.js",
+    ]);
+  });
+  it("não confunde a palavra 'three' com Three.js", () => {
+    expect(detectStack({ HTML: 1 }, "<p>one two three</p><script>let threeCount=1</script>", [])).toEqual(["HTML", "JavaScript"]);
+  });
+  it("sem site: usa só as linguagens do GitHub, na ordem web", () => {
+    expect(detectStack({ TypeScript: 10, CSS: 2, HTML: 5 }, "", [])).toEqual(["HTML", "CSS", "TypeScript"]);
+  });
+  it("versão curta para a tabela: abrevia e mostra +N", () => {
+    expect(stackCurta(["HTML", "CSS", "JavaScript", "GSAP", "Three.js"])).toEqual({ texto: "HTML · CSS · JS", mais: 2 });
+    expect(stackCurta(["TypeScript"])).toEqual({ texto: "TS", mais: 0 });
   });
 });
 

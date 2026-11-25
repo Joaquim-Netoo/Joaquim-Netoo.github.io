@@ -135,7 +135,52 @@ export function activity(repos: Repo[], now: Date = new Date()): ActivityEvent[]
   return events.sort((a, b) => +new Date(b.date) - +new Date(a.date));
 }
 
-const decodeEntities = (s: string) =>
+/** Ordem "web" para as linguagens; o resto vem por volume de código. */
+const WEB_ORDER = ["HTML", "CSS", "SCSS", "JavaScript", "TypeScript"];
+
+/** Bibliotecas reconhecidas no HTML/JS do site (padrões específicos, sem falso positivo com palavras soltas). */
+const LIBS: [string, RegExp][] = [
+  ["React", /react(?:-dom)?(?:\.production)?(?:\.min)?\.js|from\s*["']react["']|\bReactDOM\b/],
+  ["Vue", /vue(?:\.global)?(?:\.prod)?(?:\.min)?\.js|from\s*["']vue["']/],
+  ["GSAP", /\bgsap\b/i],
+  ["Three.js", /three(?:\.module)?(?:\.min)?\.js|three\.js\/r\d+|from\s*["']three["']|["']three["']\s*:|\bTHREE\.[A-Z]/],
+  ["Lenis", /\blenis\b/i],
+  ["Tailwind CSS", /tailwind/i],
+  ["Bootstrap", /bootstrap(?:\.bundle)?(?:\.min)?\.(?:css|js)/i],
+  ["Chart.js", /chart(?:\.umd)?(?:\.min)?\.js|new Chart\(/],
+  ["Leaflet", /leaflet/i],
+  ["jQuery", /jquery/i],
+];
+
+/**
+ * Tecnologias de um projeto: linguagens do GitHub (CSS/JS embutidos no HTML não aparecem lá)
+ * + o que o HTML e os scripts do site no ar revelam.
+ */
+export function detectStack(languages: Record<string, number>, html: string, scripts: string[]): string[] {
+  const langs = new Set(Object.keys(languages));
+  if (/<style[\s>]|rel=["']?stylesheet/i.test(html)) langs.add("CSS");
+  if (/<script\b/i.test(html) || scripts.length > 0) langs.add("JavaScript");
+  if (html || langs.size === 0) langs.add("HTML");
+  const ordered = [
+    ...WEB_ORDER.filter((l) => langs.has(l)),
+    ...Object.entries(languages)
+      .sort((a, b) => b[1] - a[1])
+      .map(([l]) => l)
+      .filter((l) => !WEB_ORDER.includes(l)),
+  ];
+  const code = [html, ...scripts].join("\n");
+  const libs = LIBS.filter(([, re]) => re.test(code)).map(([name]) => name);
+  return [...new Set([...ordered, ...libs])];
+}
+
+const ABREV: Record<string, string> = { JavaScript: "JS", TypeScript: "TS" };
+
+/** Versão curta para a tabela do arquivo: 3 primeiras abreviadas + quantas faltam. */
+export function stackCurta(stack: string[], n = 3): { texto: string; mais: number } {
+  return { texto: stack.slice(0, n).map((s) => ABREV[s] ?? s).join(" · "), mais: Math.max(0, stack.length - n) };
+}
+
+const decodeEntities =(s: string) =>
   s
     .replace(/&amp;/g, "&")
     .replace(/&quot;/g, '"')

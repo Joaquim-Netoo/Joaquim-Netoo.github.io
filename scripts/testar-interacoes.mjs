@@ -50,14 +50,15 @@ const browser = await chromium.launch({ channel: "chrome", args: ["--use-angle=d
   const tab = page.getByRole("tab").nth(1);
   const lang = (await tab.textContent()).replace(/[[\]]/g, "").trim();
   await tab.click();
-  const langs = await page.locator("#arquivo tbody tr td:nth-child(2)").allTextContents();
+  // a coluna de tecnologias guarda a lista completa no title
+  const langs = await page.locator("#arquivo tbody tr:visible td:nth-child(2)").evaluateAll((tds) => tds.map((td) => td.title));
   await page.getByRole("button", { name: "NOME" }).click();
   // a ordenação vale dentro de cada grupo (projetos e pasta FACULDADE\): checa o grupo principal
   const names = await page.locator("#arquivo tbody:first-of-type tr td:first-child button").allTextContents();
   r.arquivo = {
     total,
     filtro: `${lang}: ${langs.length}`,
-    filtroCorreto: langs.length > 0 && langs.every((l) => l.trim().toUpperCase() === lang),
+    filtroCorreto: langs.length > 0 && langs.every((l) => l.toUpperCase().split(", ").includes(lang)),
     ordenadoPorNome: names.join(",") === [...names].sort((a, b) => a.localeCompare(b, "pt-BR", { sensitivity: "base" })).join(","),
   };
 

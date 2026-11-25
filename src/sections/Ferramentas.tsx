@@ -5,7 +5,7 @@ import { perfil } from "@/content/perfil";
 import { linguagens, repos } from "@/lib/data";
 import { useReveal } from "@/lib/useReveal";
 
-type Grupo = "Linguagens" | "Front-end" | "Back-end" | "Dados" | "Ferramentas";
+type Grupo = "Linguagens" | "Front-end" | "Bibliotecas JS" | "Back-end" | "Dados" | "Ferramentas";
 
 /** Tópicos do GitHub reconhecidos → grupo + nome bonito. */
 const TOPICOS: Record<string, [Exclude<Grupo, "Linguagens">, string]> = {
@@ -49,20 +49,41 @@ const TOPICOS: Record<string, [Exclude<Grupo, "Linguagens">, string]> = {
   "github-actions": ["Ferramentas", "GitHub Actions"],
 };
 
+/** Bibliotecas e frameworks detectados nos sites → grupo. */
+const DETECTADOS: Record<string, Exclude<Grupo, "Linguagens">> = {
+  GSAP: "Bibliotecas JS",
+  "Three.js": "Bibliotecas JS",
+  Lenis: "Bibliotecas JS",
+  "Chart.js": "Bibliotecas JS",
+  Leaflet: "Bibliotecas JS",
+  jQuery: "Bibliotecas JS",
+  React: "Front-end",
+  Vue: "Front-end",
+  "Tailwind CSS": "Front-end",
+  Bootstrap: "Front-end",
+  "Blazor WebAssembly": "Front-end",
+  MudBlazor: "Front-end",
+};
+
 function montarGrupos(): Record<Grupo, string[]> {
   const g: Record<Grupo, string[]> = {
     Linguagens: linguagens.map((l) => l.name),
     "Front-end": [],
+    "Bibliotecas JS": [],
     "Back-end": [],
     Dados: [],
     Ferramentas: [],
   };
-  for (const r of repos)
+  // o que você declarou no perfil vem primeiro (a sua ordem); depois o detectado nos repos
+  for (const [k, v] of Object.entries(perfil.stackExtra)) if (k in g && k !== "Linguagens") g[k as Grupo].push(...v);
+  for (const r of repos) {
     for (const t of r.topics) {
       const hit = TOPICOS[t.toLowerCase()];
       if (hit) g[hit[0]].push(hit[1]);
     }
-  for (const [k, v] of Object.entries(perfil.stackExtra)) if (k in g) g[k as Grupo].push(...v);
+    for (const s of r.stack) if (DETECTADOS[s]) g[DETECTADOS[s]].push(s);
+  }
+  g.Linguagens.push(...(perfil.stackExtra.Linguagens ?? []));
   for (const k of Object.keys(g) as Grupo[]) {
     const seen = new Set<string>();
     g[k] = g[k].filter((x) => {
@@ -75,7 +96,7 @@ function montarGrupos(): Record<Grupo, string[]> {
   return g;
 }
 
-const ORDEM: Grupo[] = ["Linguagens", "Front-end", "Back-end", "Dados", "Ferramentas"];
+const ORDEM: Grupo[] = ["Linguagens", "Front-end", "Bibliotecas JS", "Back-end", "Dados", "Ferramentas"];
 
 /**
  * Grade assimétrica só com os grupos que têm itens: Linguagens ocupa 7 colunas e 2 linhas,
@@ -120,7 +141,7 @@ export function Ferramentas() {
                   <h3 className="sr-only">{grupo}</h3>
                   {items.length > 0 ? (
                     <ul
-                      className={`mono grid gap-x-6 gap-y-2 ${big ? "text-[clamp(1.25rem,2.2vw,1.75rem)] sm:grid-cols-2" : "text-[1.0625rem]"} text-paper`}
+                      className={`mono grid gap-x-6 gap-y-2 ${big ? "text-[clamp(1.25rem,2.2vw,1.75rem)] sm:grid-cols-2" : "text-[1.0625rem]"} ${className.includes("col-span-12") ? "sm:grid-cols-2 lg:grid-cols-4" : ""} text-paper`}
                     >
                       {items.map((x) => (
                         <li key={x} className="flex items-baseline gap-2.5">

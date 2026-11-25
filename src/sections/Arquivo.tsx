@@ -3,9 +3,9 @@ import { Kicker } from "@/components/Kicker";
 import { openProjeto } from "@/components/ProjetoDialog";
 import { SectionTitle } from "@/components/SectionTitle";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { linguagens, repos, type ProjetoRepo } from "@/lib/data";
+import { repos, type ProjetoRepo } from "@/lib/data";
 import { isoDay } from "@/lib/format";
-import { sortRepos, type SortMode } from "@/lib/github";
+import { sortRepos, stackCurta, type SortMode } from "@/lib/github";
 import { gsap, prefersReducedMotion, useGSAP } from "@/lib/motion";
 
 const TODAS = "TODAS";
@@ -17,6 +17,21 @@ const SORTS: { id: SortMode; label: string }[] = [
 
 const ROW =
   "dir-row group relative text-paper transition-colors duration-100 max-md:grid max-md:grid-cols-[1fr_auto] max-md:gap-x-4 max-md:border-t max-md:border-phosphor-dim/40 max-md:px-4 max-md:py-3";
+
+/** "HTML · CSS · JS +2": a lista completa fica no detalhe do projeto (e no leitor de tela). */
+function TecnologiasCurtas({ stack }: { stack: string[] }) {
+  if (stack.length === 0) return <>—</>;
+  const { texto, mais } = stackCurta(stack);
+  return (
+    <>
+      <span aria-hidden="true">
+        {texto}
+        {mais > 0 && <span className="ml-1.5 opacity-60">+{mais}</span>}
+      </span>
+      <span className="sr-only">{stack.join(", ")}</span>
+    </>
+  );
+}
 
 function RepoRow({ r, nested = false }: { r: ProjetoRepo; nested?: boolean }) {
   return (
@@ -44,7 +59,12 @@ function RepoRow({ r, nested = false }: { r: ProjetoRepo; nested?: boolean }) {
         {r.fork && <span className="ml-2 text-[0.75rem] opacity-70">[FORK]</span>}
         {r.manual && <span className="ml-2 text-[0.75rem] opacity-70">[EXTERNO]</span>}
       </td>
-      <td className="px-5 py-2.5 max-md:p-0 max-md:text-[0.8125rem] max-md:opacity-80">{r.language ?? "—"}</td>
+      <td
+        className="px-5 py-2.5 whitespace-nowrap max-md:p-0 max-md:text-[0.8125rem] max-md:opacity-80"
+        title={r.stack.join(", ")}
+      >
+        <TecnologiasCurtas stack={r.stack} />
+      </td>
       <td className="px-5 py-2.5 text-right tabular-nums max-md:hidden">{r.manual ? "—" : r.stargazers_count}</td>
       <td className="px-5 py-2.5 text-right tabular-nums max-md:p-0 max-md:text-[0.8125rem] max-md:opacity-80">
         {!r.manual && r.stargazers_count > 0 && <span className="md:hidden">★ {r.stargazers_count} · </span>}
@@ -60,14 +80,16 @@ export function Arquivo() {
   const [sort, setSort] = useState<SortMode>("recentes");
   const [pastaAberta, setPastaAberta] = useState(false);
 
-  // Filtro: linguagem principal do repo. Só linguagens que são principais em algum repo.
+  // Filtro por tecnologia (linguagens e bibliotecas), das mais usadas para as menos; até 8.
   const tabs = useMemo(() => {
-    const primary = new Set(repos.map((r) => r.language).filter(Boolean) as string[]);
-    return [TODAS, ...linguagens.map((l) => l.name).filter((n) => primary.has(n)).slice(0, 8)];
+    const count = new Map<string, number>();
+    for (const r of repos) for (const t of r.stack) count.set(t, (count.get(t) ?? 0) + 1);
+    const ordem = [...count.entries()].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0])).map(([t]) => t);
+    return [TODAS, ...ordem.slice(0, 8)];
   }, []);
 
   const filtrados = useMemo(
-    () => sortRepos(lang === TODAS ? repos : repos.filter((r) => r.language === lang), sort),
+    () => sortRepos(lang === TODAS ? repos : repos.filter((r) => r.stack.includes(lang)), sort),
     [lang, sort],
   );
   const projetos = filtrados.filter((r) => !r.faculdade);
@@ -97,7 +119,7 @@ export function Arquivo() {
 
       <Tabs value={lang} onValueChange={setLang} className="mt-[clamp(36px,5vw,72px)] gap-0">
         <div className="flex flex-wrap items-end justify-between gap-x-10 gap-y-4">
-          <TabsList aria-label="Filtrar por linguagem" className="min-w-0">
+          <TabsList aria-label="Filtrar por tecnologia" className="min-w-0">
             {tabs.map((t) => (
               <TabsTrigger key={t} value={t}>
                 {t.toUpperCase()}
@@ -134,7 +156,7 @@ export function Arquivo() {
             <thead className="text-[0.8125rem] text-phosphor-dim max-md:hidden">
               <tr>
                 <th scope="col" className="px-5 py-3 font-normal">NOME</th>
-                <th scope="col" className="px-5 py-3 font-normal">LINGUAGEM</th>
+                <th scope="col" className="px-5 py-3 font-normal">TECNOLOGIAS</th>
                 <th scope="col" className="px-5 py-3 text-right font-normal">★</th>
                 <th scope="col" className="px-5 py-3 text-right font-normal">ATUALIZADO</th>
               </tr>
