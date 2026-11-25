@@ -29,6 +29,12 @@ export function isoDay(date: string | Date): string {
 
 const MESES = ["jan", "fev", "mar", "abr", "mai", "jun", "jul", "ago", "set", "out", "nov", "dez"];
 
+/** "nov 2026", ou só "2026" quando o mês não foi informado */
+export function mesAno(date: string | Date, soAno = false): string {
+  const d = new Date(date);
+  return soAno ? String(d.getUTCFullYear()) : `${MESES[d.getUTCMonth()]} ${d.getUTCFullYear()}`;
+}
+
 /** "03 nov 2026" */
 export function shortDate(date: string | Date): string {
   const d = new Date(date);

@@ -77,7 +77,7 @@ export function Atividade() {
                   className="log-dot relative top-[0.35em] size-4 border border-phosphor-dim bg-tube transition-[background-color,border-color] duration-200 group-[.is-lit]:border-phosphor group-[.is-lit]:bg-phosphor"
                 />
                 <time dateTime={e.date} className="mono text-[0.875rem] text-phosphor-dim max-sm:col-start-2">
-                  {shortDate(e.date)}
+                  {repoByName.get(e.repo)?.soAno ? e.date.slice(0, 4) : shortDate(e.date)}
                 </time>
                 <div className="max-sm:col-start-2">
                   <button
@@ -85,7 +85,7 @@ export function Atividade() {
                     className="mono text-left text-[clamp(1.125rem,1.8vw,1.5rem)] leading-tight text-paper transition-colors duration-150 group-[.is-lit]:text-phosphor hover:underline"
                     onClick={() => openProjeto(e.repo)}
                   >
-                    {e.repo}
+                    {repoByName.get(e.repo)?.titulo ?? e.repo}
                   </button>
                   <span className="hw ml-3">
                     {e.kind === "criado" ? "+ CRIADO" : "↑ PUSH"}

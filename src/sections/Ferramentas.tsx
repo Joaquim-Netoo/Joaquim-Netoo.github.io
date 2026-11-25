@@ -63,6 +63,9 @@ const DETECTADOS: Record<string, Exclude<Grupo, "Linguagens">> = {
   Bootstrap: "Front-end",
   "Blazor WebAssembly": "Front-end",
   MudBlazor: "Front-end",
+  PWA: "Front-end",
+  Supabase: "Back-end",
+  "Cloudflare Pages": "Ferramentas",
 };
 
 function montarGrupos(): Record<Grupo, string[]> {

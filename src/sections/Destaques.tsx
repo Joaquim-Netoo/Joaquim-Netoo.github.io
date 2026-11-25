@@ -3,7 +3,7 @@ import { Kicker } from "@/components/Kicker";
 import { openProjeto, ProjetoCapa } from "@/components/ProjetoDialog";
 import { SectionTitle } from "@/components/SectionTitle";
 import { destaques, type ProjetoRepo } from "@/lib/data";
-import { relativeTime, shortDate } from "@/lib/format";
+import { mesAno, relativeTime } from "@/lib/format";
 import { isTouch, prefersReducedMotion } from "@/lib/motion";
 import { setState, useStore } from "@/lib/store";
 import { useReveal } from "@/lib/useReveal";
@@ -66,7 +66,7 @@ function ProjetoCard({ repo }: { repo: ProjetoRepo }) {
           </span>
           <span aria-hidden="true">·</span>
           {repo.manual ? (
-            <span>{shortDate(repo.created_at).slice(3)}</span>
+            <span>{mesAno(repo.created_at, repo.soAno)}</span>
           ) : (
             <>
               {repo.stargazers_count > 0 && (

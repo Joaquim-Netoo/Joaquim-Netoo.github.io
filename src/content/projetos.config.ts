@@ -31,6 +31,18 @@ export const projetosConfig: ProjetosConfig = {
   } as Record<string, Sobrescrita>,
 
   manuais: [
+    {
+      nome: "App Panata",
+      descricao:
+        "Aplicativo de organização para uma fábrica de pão de queijo: clientes, vendas e recebimentos num web app que se instala no celular.",
+      data: "2026", // CONFIRMAR: mês/ano em que foi feito (ex.: "2026-09")
+      linguagem: "TypeScript",
+      tecnologias: ["HTML", "CSS", "JavaScript", "TypeScript", "React", "Supabase", "Cloudflare Pages", "PWA"],
+      link: "https://teste.panata-75t.pages.dev/",
+      texto:
+        "Web app feito para o dia a dia de uma fábrica de pão de queijo: cadastro de clientes, registro de vendas e controle de recebimentos.\n\nFoi pensado para ser instalado no telefone (PWA) e abrir como um aplicativo, sem passar por loja. Front-end em React com TypeScript, dados e autenticação no Supabase e hospedagem no Cloudflare Pages.",
+      destaque: false,
+    },
     // Exemplo (copie, preencha e tire as barras "//" para ativar):
     // {
     //   nome: "Loja da Padaria Silva",

@@ -30,6 +30,7 @@ export function manualToRepo(m: ProjetoManual): Repo {
     readme: m.texto,
     og: m.capa,
     manual: true,
+    ...(m.data.includes("-") ? {} : { soAno: true }),
   };
 }
 

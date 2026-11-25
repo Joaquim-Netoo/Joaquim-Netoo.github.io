@@ -12,7 +12,14 @@ function applyOverrides(r: Repo): Repo & { titulo: string; papel?: string; facul
   const o = projetosConfig.sobrescrever[r.name] ?? {};
   const manual = r.manual ? projetosConfig.manuais.find((m) => manualToRepo(m).name === r.name) : undefined;
   // tecnologias: detectadas no build (ou só as linguagens) + as acrescentadas na config
-  const base = r.stack ?? (r.languages ? detectStack(r.languages, "", []) : r.language ? [r.language] : []);
+  // manuais: as tecnologias cadastradas já vêm na ordem que você escreveu
+  const base = r.manual
+    ? r.topics.length
+      ? []
+      : r.language
+        ? [r.language]
+        : []
+    : (r.stack ?? (r.languages ? detectStack(r.languages, "", []) : r.language ? [r.language] : []));
   const stack = [...new Set([...base, ...(r.manual ? r.topics : []), ...(o.tecnologias ?? [])])];
   return {
     ...r,
@@ -28,7 +35,11 @@ function applyOverrides(r: Repo): Repo & { titulo: string; papel?: string; facul
 export type ProjetoRepo = ReturnType<typeof applyOverrides>;
 
 const now = new Date();
-const manuais = projetosConfig.manuais.map(manualToRepo);
+// capa dos manuais: a da config ou o screenshot do site tirado no build
+const manuais = projetosConfig.manuais.map((m) => {
+  const r = manualToRepo(m);
+  return { ...r, og: r.og ?? data.capasManuais?.[r.name] };
+});
 const githubVisiveis = visibleRepos(data.repos, projetosConfig);
 
 export const isSample = data.source === "sample";

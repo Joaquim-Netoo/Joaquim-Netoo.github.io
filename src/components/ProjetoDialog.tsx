@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from "@/components/ui/dialog";
 import { perfil } from "@/content/perfil";
 import { asset, repoByName, type ProjetoRepo } from "@/lib/data";
-import { relativeTime, shortDate } from "@/lib/format";
+import { mesAno, relativeTime } from "@/lib/format";
 import { languageShare, stackCurta } from "@/lib/github";
 import { setState, useStore } from "@/lib/store";
 
@@ -131,7 +131,7 @@ export function ProjetoDialog() {
               {(repo.manual
                 ? [
                     ["ORIGEM", "FORA DO GITHUB"],
-                    ["DATA", shortDate(repo.created_at).slice(3)],
+                    ["DATA", mesAno(repo.created_at, repo.soAno)],
                     ["SITE", repo.homepage ? "NO AR" : "—"],
                   ]
                 : repo.stargazers_count + repo.forks_count > 0
@@ -142,7 +142,7 @@ export function ProjetoDialog() {
                     ]
                   : [
                       // sem estrelas/forks: datas dizem mais do que "★ 0"
-                      ["CRIADO", shortDate(repo.created_at).slice(3)],
+                      ["CRIADO", mesAno(repo.created_at)],
                       ["ATUALIZADO", relativeTime(repo.pushed_at)],
                       ["SITE", repo.homepage ? "NO AR" : "—"],
                     ]

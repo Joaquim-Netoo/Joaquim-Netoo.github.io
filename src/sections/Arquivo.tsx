@@ -68,7 +68,7 @@ function RepoRow({ r, nested = false }: { r: ProjetoRepo; nested?: boolean }) {
       <td className="px-5 py-2.5 text-right tabular-nums max-md:hidden">{r.manual ? "—" : r.stargazers_count}</td>
       <td className="px-5 py-2.5 text-right tabular-nums max-md:p-0 max-md:text-[0.8125rem] max-md:opacity-80">
         {!r.manual && r.stargazers_count > 0 && <span className="md:hidden">★ {r.stargazers_count} · </span>}
-        {isoDay(r.pushed_at)}
+        {r.soAno ? r.pushed_at.slice(0, 4) : isoDay(r.pushed_at)}
       </td>
     </tr>
   );

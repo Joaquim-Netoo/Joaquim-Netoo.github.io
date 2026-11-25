@@ -13,6 +13,7 @@ import {
   detectStack,
   featuredRepos,
   firstSentence,
+  manualToRepo,
   metaDescription,
   sortRepos,
   visibleRepos,
@@ -295,13 +296,36 @@ async function main() {
   mkdirSync(OG_DIR, { recursive: true });
   const custom = await customOgRepos(USER);
   await pool(visible.slice(0, 60), 3, (r) => fetchCover(USER, r, custom));
+  const manuais = await capasManuais();
   const browser = browserPromise ? await browserPromise : null;
   await browser?.close();
 
-  const data: GithubData = { user: USER, generatedAt: new Date().toISOString(), source: "api", repos };
+  const data: GithubData = {
+    user: USER,
+    generatedAt: new Date().toISOString(),
+    source: "api",
+    repos,
+    capasManuais: manuais,
+  };
   mkdirSync(path.dirname(OUT), { recursive: true });
   writeFileSync(OUT, `${JSON.stringify(data, null, 2)}\n`);
   console.log(`${tag} ${repos.length} repositórios salvos em src/data/github.json (${detailed.length} com detalhes).`);
+}
+
+/** Screenshots dos projetos manuais (fora do GitHub) que têm site e não têm capa própria. */
+async function capasManuais(): Promise<Record<string, string>> {
+  const out: Record<string, string> = {};
+  const maxAge = process.env.CI ? 0 : 7 * 86_400_000;
+  mkdirSync(OG_DIR, { recursive: true });
+  for (const m of projetosConfig.manuais) {
+    if (m.capa || !m.link) continue;
+    const slug = manualToRepo(m).name;
+    const file = path.join(OG_DIR, `manual-${slug}.webp`);
+    const rel = `og/manual-${slug}.webp`;
+    const fresh = existsSync(file) && Date.now() - statSync(file).mtimeMs < maxAge;
+    if (fresh || (await screenshotSite(m.link, file)) || existsSync(file)) out[slug] = rel;
+  }
+  return out;
 }
 
 /**
@@ -315,6 +339,7 @@ async function refreshCoversFromCache() {
   const visible = visibleRepos(prev.repos, projetosConfig);
   await pool(visible.slice(0, 60), 3, (r) => fetchCover(prev.user, r, new Set()));
   for (const r of prev.repos) if (r.og && !existsSync(path.join(ROOT, "public", r.og))) delete r.og;
+  prev.capasManuais = await capasManuais();
   const browser = browserPromise ? await browserPromise : null;
   await browser?.close();
   writeFileSync(OUT, `${JSON.stringify(prev, null, 2)}\n`);

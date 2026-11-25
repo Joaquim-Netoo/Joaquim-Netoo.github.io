@@ -21,6 +21,8 @@ export interface Repo {
   manual?: boolean;
   /** tecnologias detectadas (linguagens + bibliotecas do site no ar) */
   stack?: string[];
+  /** projeto manual com data só de ano (sem mês): exibe apenas o ano */
+  soAno?: boolean;
 }
 
 /** Ajustes manuais de um repo do GitHub (projetos.config.ts → sobrescrever). */
@@ -65,6 +67,8 @@ export interface GithubData {
   /** "api" = dados reais; "sample" = dados de exemplo (usuário ainda não configurado) */
   source: "api" | "sample";
   repos: Repo[];
+  /** capas (screenshots) dos projetos manuais com link, por slug → caminho em public/ */
+  capasManuais?: Record<string, string>;
 }
 
 export interface ProjetosConfig {
