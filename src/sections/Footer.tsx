@@ -130,6 +130,28 @@ export function Footer() {
         <p className="mono text-[0.8125rem] text-paper-dim">
           © 2026 {perfil.nome} · feito à mão, com café e fósforo verde.
         </p>
+        {/* contatos sempre visíveis (no terminal de contato eles ficam atrás de um comando) */}
+        <nav aria-label="Contatos" className="mono flex flex-wrap items-center gap-x-1 text-[0.875rem] md:ml-auto">
+          {[
+            { label: "LINKEDIN", href: perfil.linkedinUrl },
+            { label: "GITHUB", href: perfil.githubUrl },
+            { label: "E-MAIL", href: `mailto:${perfil.email}` },
+          ].map((l) => (
+            <a
+              key={l.label}
+              href={l.href}
+              {...(l.href.startsWith("mailto:") ? {} : { target: "_blank", rel: "noreferrer" })}
+              className="flex min-h-11 items-center px-2 text-phosphor underline decoration-phosphor-dim underline-offset-4 transition-colors duration-150 hover:text-paper"
+            >
+              {l.label}
+              {!l.href.startsWith("mailto:") && (
+                <span aria-hidden="true" className="ml-1">
+                  ↗
+                </span>
+              )}
+            </a>
+          ))}
+        </nav>
         <button type="button" className="btn-term" onClick={desligar}>
           <span aria-hidden="true" className="inline-block size-2 rounded-full bg-led" />
           DESLIGAR
